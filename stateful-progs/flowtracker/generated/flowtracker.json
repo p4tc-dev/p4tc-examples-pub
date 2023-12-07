@@ -1,0 +1,68 @@
+{
+  "schema_version" : "1.0.0",
+  "pipeline_name" : "flowtracker",
+  "tables" : [
+    {
+      "name" : "Main/ct_flow_table",
+      "id" : 1,
+      "tentries" : 2048,
+      "nummask" : 8,
+      "keysize" : 136,
+      "keyfields" : [
+        {
+          "id" : 1,
+          "name" : "input_port",
+          "type" : "dev",
+          "match_type" : "exact",
+          "bitwidth" : 32
+        },
+        {
+          "id" : 2,
+          "name" : "srcAddr",
+          "type" : "ipv4",
+          "match_type" : "exact",
+          "bitwidth" : 32
+        },
+        {
+          "id" : 3,
+          "name" : "dstAddr",
+          "type" : "ipv4",
+          "match_type" : "exact",
+          "bitwidth" : 32
+        },
+        {
+          "id" : 4,
+          "name" : "hdr.ipv4.protocol",
+          "type" : "bit8",
+          "match_type" : "exact",
+          "bitwidth" : 8
+        },
+        {
+          "id" : 5,
+          "name" : "srcPort",
+          "type" : "be16",
+          "match_type" : "exact",
+          "bitwidth" : 16
+        },
+        {
+          "id" : 6,
+          "name" : "dstPort",
+          "type" : "be16",
+          "match_type" : "exact",
+          "bitwidth" : 16
+        }
+      ],
+      "actions" : [
+        {
+          "id" : 1,
+          "name" : "Main/ct_flow_miss",
+          "action_scope" : "DefaultOnly",
+          "annotations" : ["defaultonly"],
+          "params" : [],
+          "default_hit_action" : false,
+          "default_miss_action" : true
+        }
+      ]
+    }
+  ]
+}

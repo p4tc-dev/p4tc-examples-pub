@@ -1,0 +1,18 @@
+#!/bin/bash -x
+
+set -e
+
+TC="tc"
+$TC p4template create pipeline/flowtracker_ipv6 numtables 1
+
+$TC p4template create action/flowtracker_ipv6/Main/ct_flow_miss actid 1
+$TC p4template update action/flowtracker_ipv6/Main/ct_flow_miss state active
+
+$TC p4template create table/flowtracker_ipv6/Main/ct_flow_table \
+	tblid 1 \
+	type exact \
+	keysz 328 nummasks 8 tentries 2048 permissions 0x3DE6 \
+	table_acts act name flowtracker_ipv6/Main/ct_flow_miss flags defaultonly \
+	act name NoAction flags tableonly
+$TC p4template update table/flowtracker_ipv6/Main/ct_flow_table default_miss_action action flowtracker_ipv6/Main/ct_flow_miss
+$TC p4template update pipeline/flowtracker_ipv6 state ready
