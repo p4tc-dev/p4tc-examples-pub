@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#TC="tc"
+
+$TC filter del block 21 ingress protocol all prio 10
+$TC p4template del pipeline/flowtracker_ipv6

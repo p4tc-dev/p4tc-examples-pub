@@ -1,0 +1,29 @@
+#!/bin/bash -x
+
+#set -e
+
+#TC="tc"
+$TC p4template create pipeline/flowtracker_ipv6 pipeid 1 numtables 1
+
+$TC p4template create action/flowtracker_ipv6/Main/ct_flow_miss actid 1
+$TC p4template update action/flowtracker_ipv6/Main/ct_flow_miss state active
+
+insmod ext_Counter.ko
+
+#create Counter extern
+$TC p4template create extern/root/Counter ext_id 101 numinstances 2 has_exec_method
+
+# Create pkts and bytes instance of counter (PNA_CounterType == 3)
+$TC p4template create extern_inst/flowtracker_ipv6/Counter/global_counter tc_numel 128 \
+        instid 1 tbl_bindable constructor param PNA_CounterType type bit8 3 \
+        control_path tc_key index type bit32 param pkts type bit32 default_value 0 \
+        param bytes type bit64 default_value 0
+
+$TC p4template create table/flowtracker_ipv6/Main/ct_flow_table \
+	tblid 1 \
+	type exact \
+	keysz 328 nummasks 8 tentries 2048  permissions 0x3DE4 \
+	pna_direct_counter Counter/global_counter \
+	table_acts act name flowtracker_ipv6/Main/ct_flow_miss flags defaultonly
+$TC p4template update table/flowtracker_ipv6/Main/ct_flow_table default_miss_action action flowtracker_ipv6/Main/ct_flow_miss
+$TC p4template update pipeline/flowtracker_ipv6 state ready

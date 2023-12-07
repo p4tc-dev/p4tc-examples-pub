@@ -1,0 +1,21 @@
+sudo ip netns add p4node
+sudo ip link add p4port0 address 10:00:00:01:AA:BB type veth peer port0 address 10:00:00:02:AA:BB
+sudo ip link add p4port1 address 10:00:01:01:AA:BB type veth peer port1 address 10:00:01:02:AA:BB
+sudo ip link set dev port0 netns p4node
+sudo ip link set dev port1 netns p4node
+sudo ip a add 10.0.0.1/24 dev p4port0
+sudo ip a add 2001:db8::1/64 dev p4port0
+sudo ip neigh add 10.0.0.2 dev p4port0 lladdr 10:00:00:02:aa:bb
+sudo ip netns exec p4node ip a add 2001:db8::2/64 dev port0
+sudo ip neigh add 2001:db8::2 dev p4port0 lladdr 10:00:00:02:aa:bb
+sudo ip netns exec p4node ip a add 10.0.0.2/24 dev port0
+sudo ip a add 10.0.1.1/24 dev p4port1
+sudo ip netns exec p4node ip a add 10.0.1.2/24 dev port1
+sudo ip netns exec p4node ip l set dev port0 up
+sudo ip l set dev p4port0 up
+sudo ip l set dev p4port1 up
+sudo ip netns exec p4node ip l set dev port1 up
+sudo ip netns exec p4node tc qdisc add dev port0 ingress_block 21 clsact
+sudo ip netns exec p4node tc qdisc add dev port1 ingress_block 21 clsact
+#sudo ip netns exec p4node /bin/bash
+

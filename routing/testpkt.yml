@@ -1,0 +1,11 @@
+packet:
+  send_iface: "p4port0"
+  ether:
+    src: "02:03:04:05:06:01"
+    dst: "00:90:fb:65:d6:fe"
+  ip:
+    src: "11.0.0.1"
+    dst: "10.99.0.1"
+  udp:
+    sport: 1235
+    dport: 4321
