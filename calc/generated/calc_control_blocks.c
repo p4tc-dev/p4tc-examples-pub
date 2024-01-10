@@ -47,35 +47,6 @@ REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
 BPF_ANNOTATE_KV_PAIR(hdr_md_cpumap, u32, struct hdr_md)
 REGISTER_END()
 
-SEC("xdp/xdp-ingress")
-int xdp_func(struct xdp_md *skb) {
-        void *data_end = (void *)(long)skb->data_end;
-    struct ethhdr *eth = (struct ethhdr *)(long)skb->data;
-    if ((void *)((struct ethhdr *) eth + 1) > data_end) {
-        return XDP_ABORTED;
-    }
-    if (eth->h_proto == bpf_htons(0x0800) || eth->h_proto == bpf_htons(0x86DD)) {
-        return XDP_PASS;
-    }
-
-    struct internal_metadata *meta;
-    int ret = bpf_xdp_adjust_meta(skb, -(int)sizeof(*meta));
-    if (ret < 0) {
-        return XDP_ABORTED;
-    }
-    meta = (struct internal_metadata *)(unsigned long)skb->data_meta;
-    eth = (void *)(long)skb->data;
-    data_end = (void *)(long)skb->data_end;
-    if ((void *) ((struct internal_metadata *) meta + 1) > (void *)(long)skb->data)
-        return XDP_ABORTED;
-    if ((void *)((struct ethhdr *) eth + 1) > data_end) {
-        return XDP_ABORTED;
-    }
-    meta->pkt_ether_type = eth->h_proto;
-    eth->h_proto = bpf_htons(0x0800);
-
-    return XDP_PASS;
-}
 static __always_inline int process(struct __sk_buff *skb, struct headers_t *hdr, struct pna_global_metadata *compiler_meta__)
 {
     unsigned ebpf_packetOffsetInBits = 0;
