@@ -16,7 +16,7 @@ control Main(
     action ct_flow_miss() {
        add_entry(action_name = "NoAction",  // name of action
                  action_params = {}, 
-                 (ExpireTimeProfileId_t)0);
+                 expire_time_profile_id = (ExpireTimeProfileId_t)0);
     }
 
     table ct_flow_table {
@@ -52,7 +52,7 @@ control Main(
 
 control MainDeparserImpl(
     packet_out pkt,
-    in headers_t hdr,
+    inout headers_t hdr,
     in my_ingress_metadata_t meta,
     in pna_main_output_metadata_t ostd)
 {

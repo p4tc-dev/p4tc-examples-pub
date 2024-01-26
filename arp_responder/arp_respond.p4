@@ -15,6 +15,7 @@ control ingress(
     inout pna_main_output_metadata_t ostd
 )
 {
+   /* Generate a grat ARP */
    action arp_reply(@tc_type("macaddr") bit<48> rmac) {
 	hdr.arp.oper = ARP_REPLY;
 	hdr.arp_ipv4.tha = hdr.arp_ipv4.sha;
@@ -50,7 +51,7 @@ control ingress(
 
 control Ingress_Deparser(
     packet_out pkt,
-    in    my_ingress_headers_t hdr,
+    inout    my_ingress_headers_t hdr,
     in    my_ingress_metadata_t meta,
     in    pna_main_output_metadata_t ostd)
 {
