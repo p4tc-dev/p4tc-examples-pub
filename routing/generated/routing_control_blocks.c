@@ -92,7 +92,7 @@ if (/* hdr->ip.isValid() */
                     };
                     struct Main_fib_table_key key = {};
                     key.keysz = 32;
-                    key.field0 = hdr->ip.dstAddr;
+                    key.field0 = bpf_htonl(hdr->ip.dstAddr);
                     struct p4tc_table_entry_act_bpf *act_bpf;
                     /* value */
                     struct Main_fib_table_value *value = NULL;
@@ -180,7 +180,7 @@ if (/* hdr->ip.isValid() */
         u16 chk_state = 0;
 {
 ;
-                        ip_1 = hdr->ip;
+            ip_1 = hdr->ip;
             /* chk.clear() */
             chk_state = 0;
 ;
@@ -263,7 +263,6 @@ if (/* hdr->ip.isValid() */
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 5, (ebpf_byte));
             ebpf_packetOffsetInBits += 48;
 
-            hdr->ethernet.etherType = bpf_htons(hdr->ethernet.etherType);
             ebpf_byte = ((char*)(&hdr->ethernet.etherType))[0];
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_byte = ((char*)(&hdr->ethernet.etherType))[1];
@@ -288,14 +287,12 @@ if (/* hdr->ip.isValid() */
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_packetOffsetInBits += 8;
 
-            ip_1.totalLen = bpf_htons(ip_1.totalLen);
             ebpf_byte = ((char*)(&ip_1.totalLen))[0];
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_byte = ((char*)(&ip_1.totalLen))[1];
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 1, (ebpf_byte));
             ebpf_packetOffsetInBits += 16;
 
-            ip_1.identification = bpf_htons(ip_1.identification);
             ebpf_byte = ((char*)(&ip_1.identification))[0];
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_byte = ((char*)(&ip_1.identification))[1];
@@ -306,7 +303,6 @@ if (/* hdr->ip.isValid() */
             write_partial(pkt + BYTES(ebpf_packetOffsetInBits) + 0, 3, 5, (ebpf_byte >> 0));
             ebpf_packetOffsetInBits += 3;
 
-            ip_1.fragOffset = bpf_htons(ip_1.fragOffset << 3);
             ebpf_byte = ((char*)(&ip_1.fragOffset))[0];
             write_partial(pkt + BYTES(ebpf_packetOffsetInBits) + 0, 5, 0, (ebpf_byte >> 3));
             write_partial(pkt + BYTES(ebpf_packetOffsetInBits) + 0 + 1, 3, 5, (ebpf_byte));
@@ -322,7 +318,6 @@ if (/* hdr->ip.isValid() */
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_packetOffsetInBits += 8;
 
-            ip_1.hdrChecksum = bpf_htons(ip_1.hdrChecksum);
             ebpf_byte = ((char*)(&ip_1.hdrChecksum))[0];
             write_byte(pkt, BYTES(ebpf_packetOffsetInBits) + 0, (ebpf_byte));
             ebpf_byte = ((char*)(&ip_1.hdrChecksum))[1];

@@ -15,14 +15,8 @@ control ingress(
     inout pna_main_output_metadata_t ostd
 )
 {
-   action send_nh(@tc_type("dev") PortId_t port_id, @tc_type("macaddr") bit<48> dmac, @tc_type("macaddr") bit<48> smac) {
-        hdr.ethernet.srcAddr = smac;
-        hdr.ethernet.dstAddr = dmac;
-        send_to_port(port_id);
-   }
-
-   action drop() {
-        drop_packet();
+   action send_nh() {
+        ...
    }
 
     table nh_table {
@@ -31,10 +25,8 @@ control ingress(
         }
         actions = {
             send_nh;
-            drop;
         }
         size = REDIR_TABLE_SIZE;
-        const default_action = drop;
     }
 
     apply {
@@ -46,7 +38,7 @@ control ingress(
 
 control Ingress_Deparser(
     packet_out pkt,
-    in    my_ingress_headers_t hdr,
+    inout    my_ingress_headers_t hdr,
     in    my_ingress_metadata_t meta,
     in    pna_main_output_metadata_t ostd)
 {
