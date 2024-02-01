@@ -58,8 +58,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname simple_l3 \
-action bpf obj simple_l3_parser.o section classifier/tc-parse \
-action bpf obj simple_l3_control_blocks.o section classifier/tc-ingress
+action bpf obj simple_l3_parser.o section p4tc/parse \
+action bpf obj simple_l3_control_blocks.o section p4tc/main
 ```
 
 ### Terminal 4 (on the VM side)

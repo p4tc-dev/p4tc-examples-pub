@@ -9,6 +9,8 @@ sudo ip neigh add 10.0.0.2 dev p4port0 lladdr 10:00:00:02:aa:bb
 sudo ip netns exec p4node ip a add 2001:db8::2/64 dev port0
 sudo ip neigh add 2001:db8::2 dev p4port0 lladdr 10:00:00:02:aa:bb
 sudo ip netns exec p4node ip a add 10.0.0.2/24 dev port0
+sudo ip netns exec p4node ip neigh add 10.0.0.1 dev port0 lladdr 10:00:00:01:aa:bb
+sudo ip netns exec p4node ip neigh add 2001:db8::1 dev port0 lladdr 10:00:00:01:aa:bb
 sudo ip a add 10.0.1.1/24 dev p4port1
 sudo ip netns exec p4node ip a add 10.0.1.2/24 dev port1
 sudo ip netns exec p4node ip l set dev port0 up

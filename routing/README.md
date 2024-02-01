@@ -64,8 +64,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname routing \
-action bpf obj routing_parser.o section classifier/tc-parse \
-action bpf obj routing_control_blocks.o section classifier/tc-ingress
+action bpf obj routing_parser.o section p4tc/parse \
+action bpf obj routing_control_blocks.o section p4tc/main
 ```
 
 ### Terminal 4 (on the VM side)
@@ -80,13 +80,13 @@ Lets check some stats, below shows 3 packets dropped by the parser on <u>termina
 $TC -s filter ls block 21 ingress
 filter protocol all pref 10 p4 chain 0
 filter protocol all pref 10 p4 chain 0 handle 0x1 pname routing
-	action order 1: bpf routing_parser.o:[classifier/tc-parse] id 92 name tc_parse_func tag 1bd66321c5ad54e4 jited default-action pipe
+	action order 1: bpf routing_parser.o:[p4tc/parse] id 92 name tc_parse_func tag 1bd66321c5ad54e4 jited default-action pipe
 	 index 1 ref 1 bind 1 installed 590 sec used 293 sec firstused 295 sec
 	Action statistics:
 	Sent 84 bytes 3 pkt (dropped 3, overlimits 0 requeues 0)
 	backlog 0b 0p requeues 0
 
-	action order 2: bpf routing_control_blocks.o:[classifier/tc-ingress] id 94 name tc_ingress_func tag 42e6e971daa41152 jited default-action pipe
+	action order 2: bpf routing_control_blocks.o:[p4tc/main] id 94 name tc_ingress_func tag 42e6e971daa41152 jited default-action pipe
 	 index 2 ref 1 bind 1 installed 590 sec used 590 sec
 	Action statistics:
 	Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
@@ -105,13 +105,13 @@ And back on <u>terminal 3</u>, check the stats
 root@p4tc:/home/vagrant/p4tc-examples-pub/routing/generated# $TC -s filter ls block 21 ingress
 filter protocol all pref 10 p4 chain 0
 filter protocol all pref 10 p4 chain 0 handle 0x1 pname routing
-	action order 1: bpf routing_parser.o:[classifier/tc-parse] id 92 name tc_parse_func tag 1bd66321c5ad54e4 jited default-action pipe
+	action order 1: bpf routing_parser.o:[p4tc/parse] id 92 name tc_parse_func tag 1bd66321c5ad54e4 jited default-action pipe
 	 index 1 ref 1 bind 1 installed 1082 sec used 16 sec firstused 787 sec
 	 Action statistics:
 	Sent 112 bytes 4 pkt (dropped 3, overlimits 0 requeues 0)
 	backlog 0b 0p requeues 0
 
-	action order 2: bpf routing_control_blocks.o:[classifier/tc-ingress] id 94 name tc_ingress_func tag 42e6e971daa41152 jited default-action pipe
+	action order 2: bpf routing_control_blocks.o:[p4tc/main] id 94 name tc_ingress_func tag 42e6e971daa41152 jited default-action pipe
 	 index 2 ref 1 bind 1 installed 1082 sec used 16 sec firstused 16 sec
 	 Action statistics:
 	Sent 28 bytes 1 pkt (dropped 1, overlimits 0 requeues 0)
@@ -161,13 +161,13 @@ Our debug output on the filter now looks as follows:
 root@p4tc:/home/vagrant/p4tc-examples-pub/routing/generated# $TC -s filter ls block 21 ingress 
 filter protocol all pref 10 p4 chain 0 
 filter protocol all pref 10 p4 chain 0 handle 0x1 pname routing 
-	action order 1: bpf routing_parser.o:[classifier/tc-parse] id 78 name tc_parse_func tag 4b0873fea2961183 jited default-action pipe
+	action order 1: bpf routing_parser.o:[p4tc/parse] id 78 name tc_parse_func tag 4b0873fea2961183 jited default-action pipe
 	 index 1 ref 1 bind 1 installed 732 sec used 480 sec firstused 712 sec
  	Action statistics:
 	Sent 112 bytes 4 pkt (dropped 3, overlimits 0 requeues 0) 
 	backlog 0b 0p requeues 0
 
-	action order 2: bpf routing_control_blocks.o:[classifier/tc-ingress] id 80 name tc_ingress_func tag fe7824eaa74d0f2b jited default-action pipe
+	action order 2: bpf routing_control_blocks.o:[p4tc/main] id 80 name tc_ingress_func tag fe7824eaa74d0f2b jited default-action pipe
 	 index 2 ref 1 bind 1 installed 732 sec used 480 sec firstused 480 sec
  	Action statistics:
 	Sent 56 bytes 2 pkt (dropped 1, overlimits 0 requeues 0) 

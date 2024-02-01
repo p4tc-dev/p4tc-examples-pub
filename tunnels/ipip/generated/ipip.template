@@ -4,7 +4,7 @@ set -e
 
 : ${TC:="tc"}
 
-$TC p4template create pipeline/ipip pipeid 1 numtables 1
+$TC p4template create pipeline/ipip numtables 1
 
 $TC p4template create action/ipip/Main/set_ipip actid 1 \
 	param src type ipv4 \
@@ -26,6 +26,7 @@ $TC p4template create table/ipip/Main/fwd_table \
 	keysz 32 nummasks 8 tentries 2048 \
 	table_acts act name ipip/Main/set_ipip \
 	act name ipip/Main/set_nh \
-	act name ipip/Main/drop
+	act name ipip/Main/drop \
+	act name NoAction
 $TC p4template update table/ipip/Main/fwd_table default_miss_action action ipip/Main/drop
 $TC p4template update pipeline/ipip state ready

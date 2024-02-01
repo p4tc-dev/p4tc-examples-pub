@@ -1,9 +1,9 @@
 {
   "schema_version" : "1.0.0",
-  "pipeline_name" : "ipip",
+  "pipeline_name" : "routing",
   "tables" : [
     {
-      "name" : "Main/fwd_table",
+      "name" : "Main/nh_table",
       "id" : 1,
       "tentries" : 2048,
       "nummask" : 8,
@@ -11,8 +11,8 @@
       "keyfields" : [
         {
           "id" : 1,
-          "name" : "port",
-          "type" : "dev",
+          "name" : "nh_index",
+          "type" : "bit32",
           "match_type" : "exact",
           "bitwidth" : 32
         }
@@ -20,31 +20,12 @@
       "actions" : [
         {
           "id" : 1,
-          "name" : "Main/set_ipip",
+          "name" : "Main/drop",
           "action_scope" : "TableAndDefault",
           "annotations" : [],
-          "params" : [
-            {
-              "id" : 1,
-              "name" : "src",
-              "type" : "ipv4",
-              "bitwidth" : 32
-            },
-            {
-              "id" : 2,
-              "name" : "dst",
-              "type" : "ipv4",
-              "bitwidth" : 32
-            },
-            {
-              "id" : 3,
-              "name" : "port",
-              "type" : "dev",
-              "bitwidth" : 32
-            }
-          ],
+          "params" : [],
           "default_hit_action" : false,
-          "default_miss_action" : false
+          "default_miss_action" : true
         },
         {
           "id" : 2,
@@ -67,13 +48,38 @@
           ],
           "default_hit_action" : false,
           "default_miss_action" : false
-        },
+        }
+      ]
+    },
+    {
+      "name" : "Main/fib_table",
+      "id" : 2,
+      "tentries" : 2048,
+      "nummask" : 8,
+      "keysize" : 32,
+      "keyfields" : [
+        {
+          "id" : 1,
+          "name" : "prefix",
+          "type" : "ipv4",
+          "match_type" : "lpm",
+          "bitwidth" : 32
+        }
+      ],
+      "actions" : [
         {
           "id" : 3,
-          "name" : "Main/drop",
+          "name" : "Main/set_nhid",
           "action_scope" : "TableAndDefault",
           "annotations" : [],
-          "params" : [],
+          "params" : [
+            {
+              "id" : 1,
+              "name" : "index",
+              "type" : "bit32",
+              "bitwidth" : 32
+            }
+          ],
           "default_hit_action" : false,
           "default_miss_action" : true
         }

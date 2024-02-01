@@ -77,47 +77,82 @@ You should immediately see on on <u>terminal 1</u> an event advertising that a t
 
 ```
  created pipeline:  flowtracker(id 1)
-  table: Main/ct_tcp_table(id 1)entry priority 64000[permissions -RUD-PS-R--X--]
-     entry key
-      input_port id:1 size:32b type:dev exact fieldval  port0
-      srcAddr id:2 size:32b type:ipv4 exact fieldval  10.0.0.1/32
-      dstAddr id:3 size:32b type:ipv4 exact fieldval  10.0.0.2/32
-      hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6
-      src_port id:5 size:16b type:be16 exact fieldval  45506
-      dstPort id:6 size:16b type:be16 exact fieldval  1234
-     created by: kernel (id 1)
-     dynamic true
-     table aging 30000
+ table: Main/ct_flow_table(id 1)entry priority 64000[permissions -RUD-PS-RUDX--]
+    entry key
+     input_port id:1 size:32b type:dev exact fieldval  port0
+     srcAddr id:2 size:32b type:ipv4 exact fieldval  10.0.0.1/32
+     dstAddr id:3 size:32b type:ipv4 exact fieldval  10.0.0.2/32
+     hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6
+     srcPort id:5 size:16b type:be16 exact fieldval  36876
+     dstPort id:6 size:16b type:be16 exact fieldval  1234
+    created by: kernel (id 1)
+    dynamic true
+    table aging 30000
+
+    tmpl created false
+          Extern kind Counter
+          Extern instance global_counter
+          Extern key 6
+          Params:
+
+          pkts  id 2 type bit32 value: 0
+          bytes  id 3 type bit64 value: 0
 ```
 
 Type a few characters followed by CR key if you want to keep this flow alive..
 
-And if you wait for 30 seconds without typing anything on the nc window (terminal 3) you will see the entry getting expired by the kernel idle timer, as such:
+Right after you can retrive the counter values the counter using the extern get command:
+
+```
+$TC p4ctrl get flowtracker/extern/Counter/global_counter tc_key index 6
+ total exts 0
+ 
+         extern order 1:
+           Extern kind Counter
+           Extern instance global_counter
+           Extern key 6
+           Params:
+ 
+           pkts  id 2 type bit32 value: 1
+           bytes  id 3 type bit64 value: 60
+```
+
+Note that we specified the key (6) according to the value showed in the entry create event.
+
+If you wait for 30 seconds without typing anything on the nc window (terminal 3) you will see the entry getting expired by the kernel idle timer, as such:
 
 ```
  deleted pipeline:  flowtracker(id 1)
-  table: Main/ct_tcp_table(id 1)entry priority 64000[permissions -RUD-PS-R--X--]
+  table: Main/ct_flow_table(id 1)entry priority 64000[permissions -RUD-PS-RUDX--]
      entry key
       input_port id:1 size:32b type:dev exact fieldval  port0
       srcAddr id:2 size:32b type:ipv4 exact fieldval  10.0.0.1/32
       dstAddr id:3 size:32b type:ipv4 exact fieldval  10.0.0.2/32
       hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6
-      src_port id:5 size:16b type:be16 exact fieldval  45506
+      srcPort id:5 size:16b type:be16 exact fieldval  36876
       dstPort id:6 size:16b type:be16 exact fieldval  1234
      created by: kernel (id 1)
      deleted by: timer (id 3)
      dynamic true
      table aging 30000
      created 30 sec    used 30 sec
+     tmpl created false
+           Extern kind Counter
+           Extern instance global_counter
+           Extern key 6
+           Params:
+ 
+           pkts  id 2 type bit32 value: 1
+           bytes  id 3 type bit64 value: 60
 ```
 
 Other commands
 ---------------
 to dump the table entries:
-`tc p4ctrl get flowtracker/table/Main/ct\_tcp\_table`
+`tc p4ctrl get flowtracker/table/Main/ct_tcp_table`
 
 Dump in json format:
-`tc -j p4ctrl get flowtracker/table/Main/ct\_tcp\_table`
+`tc -j p4ctrl get flowtracker/table/Main/ct_tcp_table`
 
 To cleanup
 ----------

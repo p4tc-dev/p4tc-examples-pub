@@ -11,6 +11,16 @@ REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
 BPF_ANNOTATE_KV_PAIR(hdr_md_cpumap, u32, struct hdr_md)
 REGISTER_END()
 
+struct p4tc_filter_fields {
+        __u32 pipeid;
+        __u32 handle;
+        __u32 classid;
+        __u32 chain;
+        __be16 proto;
+        __u16 prio;
+};
+struct p4tc_filter_fields p4tc_filter_fields;
+
 static __always_inline int run_parser(struct __sk_buff *skb, struct headers_t *hdr, struct pna_global_metadata *compiler_meta__)
 {
     unsigned ebpf_packetOffsetInBits = 0;
@@ -214,7 +224,7 @@ static __always_inline int run_parser(struct __sk_buff *skb, struct headers_t *h
     return -1;
 }
 
-SEC("classifier/tc-parse")
+SEC("p4tc/parse")
 int tc_parse_func(struct __sk_buff *skb) {
     struct hdr_md *hdrMd;
     struct pna_global_metadata *compiler_meta__ = (struct pna_global_metadata *) skb->cb;

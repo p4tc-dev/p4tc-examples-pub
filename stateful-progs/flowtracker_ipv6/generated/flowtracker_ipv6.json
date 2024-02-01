@@ -1,7 +1,6 @@
 {
   "schema_version" : "1.0.0",
   "pipeline_name" : "flowtracker_ipv6",
-  "id" : 1,
   "externs": [
       {
           "id": 1,

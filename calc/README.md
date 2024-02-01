@@ -87,8 +87,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname calc \
-action bpf obj calc_parser.o section classifier/tc-parse \
-action bpf obj calc_control_blocks.o section classifier/tc-ingress
+action bpf obj calc_parser.o section p4tc/parse \
+action bpf obj calc_control_blocks.o section p4tc/main
 ```
 
 ### Terminal 4 (traffic generator)
