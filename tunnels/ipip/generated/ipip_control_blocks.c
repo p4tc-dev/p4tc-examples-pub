@@ -9,12 +9,15 @@ struct __attribute__((__packed__)) Main_fwd_table_key {
     u32 keysz;
     u32 maskid;
     u32 field0; /* istd.input_port */
-} __attribute__((aligned(4)));
+} __attribute__((aligned(8)));
 #define MAIN_FWD_TABLE_ACT_MAIN_SET_IPIP 1
 #define MAIN_FWD_TABLE_ACT_MAIN_SET_NH 2
 #define MAIN_FWD_TABLE_ACT_MAIN_DROP 3
 struct __attribute__((__packed__)) Main_fwd_table_value {
     unsigned int action;
+    __u32 hit:1,
+           is_default_miss_act:1,
+           is_default_hit_act:1;
     union {
         struct {
         } _NoAction;
@@ -31,6 +34,16 @@ struct __attribute__((__packed__)) Main_fwd_table_value {
         } Main_drop;
     } u;
 };
+
+struct p4tc_filter_fields {
+        __u32 pipeid;
+        __u32 handle;
+        __u32 classid;
+        __u32 chain;
+        __be16 proto;
+        __u16 prio;
+};
+struct p4tc_filter_fields p4tc_filter_fields;
 
 REGISTER_START()
 REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
@@ -76,10 +89,11 @@ if (/* hdr->outer.isValid() */
                 {
                     /* construct key */
                     struct p4tc_table_entry_act_bpf_params__local params = {
-                        .pipeid = 1,
+                        .pipeid = p4tc_filter_fields.pipeid,
                         .tblid = 1
                     };
-                    struct Main_fwd_table_key key = {};
+                    struct Main_fwd_table_key key;
+		    __builtin_memset(&key, 0, sizeof(key));
                     key.keysz = 32;
                     key.field0 = skb->ifindex;
                     struct p4tc_table_entry_act_bpf *act_bpf;
@@ -92,7 +106,7 @@ if (/* hdr->outer.isValid() */
                         /* miss; find default action */
                         hit = 0;
                     } else {
-                        hit = 1;
+                        hit = value->hit;
                     }
                     if (value != NULL) {
                         /* run action */
@@ -438,7 +452,7 @@ if (/* hdr->outer.isValid() */
     }
     return -1;
 }
-SEC("classifier/tc-ingress")
+SEC("p4tc/main")
 int tc_ingress_func(struct __sk_buff *skb) {
     struct pna_global_metadata *compiler_meta__ = (struct pna_global_metadata *) skb->cb;
     if (compiler_meta__->pass_to_kernel == true) return TC_ACT_OK;

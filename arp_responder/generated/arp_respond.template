@@ -3,7 +3,7 @@
 set -e
 
 TC="tc"
-$TC p4template create pipeline/arp_respond pipeid 1 numtables 1
+$TC p4template create pipeline/arp_respond numtables 1
 
 $TC p4template create action/arp_respond/ingress/arp_reply actid 1 \
 	param rmac type macaddr

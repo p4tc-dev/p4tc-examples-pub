@@ -9,11 +9,14 @@ struct __attribute__((__packed__)) ingress_arp_table_key {
     u32 keysz;
     u32 maskid;
     u32 field0; /* hdr.arp_ipv4.tpa */
-} __attribute__((aligned(4)));
+} __attribute__((aligned(8)));
 #define INGRESS_ARP_TABLE_ACT_INGRESS_ARP_REPLY 1
 #define INGRESS_ARP_TABLE_ACT_INGRESS_DROP 2
 struct __attribute__((__packed__)) ingress_arp_table_value {
     unsigned int action;
+    u32 hit:1,
+       is_default_miss_act:1,
+       is_default_hit_act:1;
     union {
         struct {
         } _NoAction;
@@ -29,6 +32,16 @@ REGISTER_START()
 REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
 BPF_ANNOTATE_KV_PAIR(hdr_md_cpumap, u32, struct hdr_md)
 REGISTER_END()
+
+struct p4tc_filter_fields {
+        __u32 pipeid;
+        __u32 handle;
+        __u32 classid;
+        __u32 chain;
+        __be16 proto;
+        __u16 prio;
+};
+struct p4tc_filter_fields p4tc_filter_fields;
 
 static __always_inline int process(struct __sk_buff *skb, struct my_ingress_headers_t *hdr, struct pna_global_metadata *compiler_meta__)
 {
@@ -57,10 +70,11 @@ static __always_inline int process(struct __sk_buff *skb, struct my_ingress_head
             {
                 /* construct key */
                 struct p4tc_table_entry_act_bpf_params__local params = {
-                    .pipeid = 1,
+                    .pipeid = p4tc_filter_fields.pipeid,
                     .tblid = 1
                 };
-                struct ingress_arp_table_key key = {};
+                struct ingress_arp_table_key key;
+		__builtin_memset(&key, 0, sizeof(key));
                 key.keysz = 32;
                 key.field0 = hdr->arp_ipv4.tpa;
                 struct p4tc_table_entry_act_bpf *act_bpf;
@@ -73,7 +87,7 @@ static __always_inline int process(struct __sk_buff *skb, struct my_ingress_head
                     /* miss; find default action */
                     hit = 0;
                 } else {
-                    hit = 1;
+                    hit = act_bpf->hit;
                 }
                 if (value != NULL) {
                     /* run action */
@@ -270,7 +284,7 @@ static __always_inline int process(struct __sk_buff *skb, struct my_ingress_head
     }
     return -1;
 }
-SEC("classifier/tc-ingress")
+SEC("p4tc/main")
 int tc_ingress_func(struct __sk_buff *skb) {
     struct pna_global_metadata *compiler_meta__ = (struct pna_global_metadata *) skb->cb;
     if (compiler_meta__->pass_to_kernel == true) return TC_ACT_OK;

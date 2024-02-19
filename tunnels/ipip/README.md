@@ -1,7 +1,7 @@
 
 # ipip
 
-The *ipip* program parses plain IPv4 as well IP-in-IP packets. Any other packets are rejected(dropped).
+The *ipip* program parses plain IPv4 as well as IP-in-IP packets. Any other packets are rejected(dropped).
 
 A lookup, using as key the port/netdev the packet arrived on, is applied on table *fwd_table*. A match will either result in action *set_ipip* or *set_nh*. If an entry has no action or no entry is found, then by default *drop* action is assumed, meaning the packet will be dropped.
 
@@ -64,8 +64,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname ipip \
-action bpf obj ipip_parser.o section classifier/tc-parse \
-action bpf obj ipip_control_blocks.o section classifier/tc-ingress
+action bpf obj ipip_parser.o section p4tc/parse \
+action bpf obj ipip_control_blocks.o section p4tc/main
 ```
 
 ### Terminal 4 (on the VM side, not inside container)
@@ -80,13 +80,13 @@ Lets check some stats, below shows 3 packets dropped by the parser on <u>termina
 root@p4tc:/home/vagrant/p4tc-examples-pub/tunnels/ipip/generated# $TC -s filter ls block 21 ingress
 filter protocol all pref 10 p4 chain 0
 filter protocol all pref 10 p4 chain 0 handle 0x1 pname ipip
-	action order 1: bpf ipip_parser.o:[classifier/tc-parse] id 29 name tc_parse_func tag b9fb4a22b6a18ba4 jited default-action pipe
+	action order 1: bpf ipip_parser.o:[p4tc/parse] id 29 name tc_parse_func tag b9fb4a22b6a18ba4 jited default-action pipe
 	 index 1 ref 1 bind 1 installed 63 sec used 11 sec firstused 21 sec
 	Action statistics:
 	Sent 140 bytes 4 pkt (dropped 4, overlimits 0 requeues 0)
 	backlog 0b 0p requeues 0
 
-	action order 2: bpf ipip_control_blocks.o:[classifier/tc-ingress] id 31 name tc_ingress_func tag a5fadf8dff4d044d jited default-action pipe
+	action order 2: bpf ipip_control_blocks.o:[p4tc/main] id 31 name tc_ingress_func tag a5fadf8dff4d044d jited default-action pipe
 	 index 2 ref 1 bind 1 installed 63 sec used 63 sec
 	Action statistics:
 	Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
@@ -98,7 +98,7 @@ Note that the second program *ipip_control_blocks.o* is not hit at all..
 
 Back to <u>terminal 4</u>, lets send a udp packet that will exercise the default entries
 
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/tunnels/ipip/generated/testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py ./testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -106,13 +106,13 @@ And back on <u>terminal 3</u>, check the stats
 root@p4tc:/home/vagrant/p4tc-examples-pub/tunnels/ipip/generated# $TC -s filter ls block 21 ingress
 filter protocol all pref 10 p4 chain 0
 filter protocol all pref 10 p4 chain 0 handle 0x1 pname ipip
-	action order 1: bpf ipip_parser.o:[classifier/tc-parse] id 29 name tc_parse_func tag b9fb4a22b6a18ba4 jited default-action pipe
+	action order 1: bpf ipip_parser.o:[p4tc/parse] id 29 name tc_parse_func tag b9fb4a22b6a18ba4 jited default-action pipe
 	 index 1 ref 1 bind 1 installed 220 sec used 3 sec firstused 179 sec
         Action statistics:
 	Sent 168 bytes 5 pkt (dropped 4, overlimits 0 requeues 0)
 	backlog 0b 0p requeues 0
 
-	action order 2: bpf ipip_control_blocks.o:[classifier/tc-ingress] id 31 name tc_ingress_func tag a5fadf8dff4d044d jited default-action pipe
+	action order 2: bpf ipip_control_blocks.o:[p4tc/main] id 31 name tc_ingress_func tag a5fadf8dff4d044d jited default-action pipe
 	 index 2 ref 1 bind 1 installed 220 sec used 3 sec firstused 3 sec
 	Action statistics:
 	Sent 28 bytes 1 pkt (dropped 1, overlimits 0 requeues 0)

@@ -15,9 +15,11 @@ control ingress(
     inout pna_main_output_metadata_t ostd
 )
 {
-   action send_nh() {
-        ...
-   }
+    action send_nh(@tc_type("dev") PortId_t port_id, @tc_type("macaddr") bit<48> dmac, @tc_type("macaddr") bit<48> smac) {
+         hdr.ethernet.srcAddr = smac;
+         hdr.ethernet.dstAddr = dmac;
+         send_to_port(port_id);
+    }
 
     table nh_table {
         key = {

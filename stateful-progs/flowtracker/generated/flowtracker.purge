@@ -6,4 +6,6 @@ $TC filter del block 21 ingress protocol all prio 10 p4 pname flowtracker
 #avoid workqueue latency effect
 sleep 1
 $TC p4template del pipeline/flowtracker
+$TC p4template del extern/root/Counter
+rmmod ext_Counter.ko
 sudo rm -rf /sys/fs/bpf/tc/globals/

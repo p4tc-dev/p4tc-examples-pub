@@ -19,10 +19,13 @@ struct __attribute__((__packed__)) Main_ct_flow_table_key {
     u8 field3; /* hdr.ipv4.protocol */
     u16 field4; /* meta.srcPort */
     u16 field5; /* meta.dstPort */
-} __attribute__((aligned(4)));
+} __attribute__((aligned(8)));
 #define MAIN_CT_FLOW_TABLE_ACT_MAIN_CT_FLOW_MISS 1
 struct __attribute__((__packed__)) Main_ct_flow_table_value {
     unsigned int action;
+    __u32 hit:1,
+           is_default_miss_act:1,
+           is_default_hit_act:1;
     union {
         struct {
         } _NoAction;
@@ -36,10 +39,21 @@ REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
 BPF_ANNOTATE_KV_PAIR(hdr_md_cpumap, u32, struct hdr_md)
 REGISTER_END()
 
+struct p4tc_filter_fields {
+        __u32 pipeid;
+        __u32 handle;
+        __u32 classid;
+	__u32 chain;
+        __be16 proto;
+        __u16 prio;
+};
+struct p4tc_filter_fields p4tc_filter_fields;
+
 static __always_inline int process(struct __sk_buff *skb, struct headers_t *hdr, struct pna_global_metadata *compiler_meta__)
 {
     struct hdr_md *hdrMd;
     unsigned ebpf_packetOffsetInBits = hdrMd->ebpf_packetOffsetInBits;
+    const __u32 pipeid = p4tc_filter_fields.pipeid;
     ParserError_t ebpf_errorCode = NoError;
     void* pkt = ((void*)(long)skb->data);
     void* ebpf_packetEnd = ((void*)(long)skb->data_end);
@@ -74,10 +88,11 @@ if (/* hdr->udp.isValid() */
             {
                 /* construct key */
                 struct p4tc_table_entry_act_bpf_params__local params = {
-                    .pipeid = 1,
+                    .pipeid = pipeid,
                     .tblid = 1
                 };
-                struct Main_ct_flow_table_key key = {};
+                struct Main_ct_flow_table_key key;
+                __builtin_memset(&key, 0, sizeof(key));
                 key.keysz = 136;
                 key.field0 = skb->ifindex;
                 key.field1 = bpf_htonl(hdr->ipv4.srcAddr);
@@ -95,22 +110,25 @@ if (/* hdr->udp.isValid() */
                     /* miss; find default action */
                     hit = 0;
                 } else {
-                    hit = 1;
+                    hit = value->hit;
                 }
                 if (value != NULL) {
                     /* run action */
                     switch (value->action) {
                         case 0:
-                            {
-                            }
                             break;
                         case MAIN_CT_FLOW_TABLE_ACT_MAIN_CT_FLOW_MISS:
                             {
 			        struct p4tc_table_entry_create_bpf_params__local create_params = {
-				.pipeid = 1,
+				.pipeid = pipeid,
 				.tblid = 1
 			        };
 
+				create_params.handle = p4tc_filter_fields.handle;
+				create_params.classid = p4tc_filter_fields.classid;
+				create_params.proto = p4tc_filter_fields.proto;
+				create_params.prio = p4tc_filter_fields.prio;
+				create_params.chain = p4tc_filter_fields.chain;
                                 bpf_p4tc_entry_create_on_miss(skb, &create_params,
 						              &key, sizeof(key),
 					                      NULL);
@@ -290,7 +308,7 @@ if (/* hdr->udp.isValid() */
     }
     return -1;
 }
-SEC("classifier/tc-ingress")
+SEC("p4tc/main")
 int tc_ingress_func(struct __sk_buff *skb) {
     struct pna_global_metadata *compiler_meta__ = (struct pna_global_metadata *) skb->cb;
     if (!compiler_meta__->recirculated) {
@@ -312,9 +330,8 @@ int tc_ingress_func(struct __sk_buff *skb) {
     if (ret != -1) {
         return ret;
     }
-    if (!compiler_meta__->drop && compiler_meta__->egress_port == 0) {
+    if (!compiler_meta__->drop && compiler_meta__->egress_port == 0)
 	    return TC_ACT_OK;
-    }
     return bpf_redirect(compiler_meta__->egress_port, 0);
 }
 char _license[] SEC("license") = "GPL";

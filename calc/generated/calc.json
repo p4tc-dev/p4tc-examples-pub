@@ -1,7 +1,6 @@
 {
   "schema_version" : "1.0.0",
   "pipeline_name" : "calc",
-  "id" : 1,
   "tables" : [
     {
       "name" : "MainControlImpl/calculate",

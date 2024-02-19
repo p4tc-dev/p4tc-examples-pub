@@ -2,10 +2,15 @@
  */
 #include "simple_l3_parser.h"
 
-REGISTER_START()
-REGISTER_TABLE(hdr_md_cpumap, BPF_MAP_TYPE_PERCPU_ARRAY, u32, struct hdr_md, 2)
-BPF_ANNOTATE_KV_PAIR(hdr_md_cpumap, u32, struct hdr_md)
-REGISTER_END()
+struct p4tc_filter_fields {
+        __u32 pipeid;
+        __u32 handle;
+        __u32 classid;
+        __u32 chain;
+        __be16 proto;
+        __u16 prio;
+};
+struct p4tc_filter_fields p4tc_filter_fields;
 
 static __always_inline int run_parser(struct __sk_buff *skb, struct my_ingress_headers_t *hdr, struct pna_global_metadata *compiler_meta__)
 {
@@ -48,16 +53,16 @@ static __always_inline int run_parser(struct __sk_buff *skb, struct my_ingress_h
             hdr->ipv4.diffserv = (u8)((load_byte(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 8;
 
-            hdr->ipv4.totalLen = (u16)((load_half_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ipv4.totalLen = (u16)((load_half(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 16;
 
-            hdr->ipv4.identification = (u16)((load_half_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ipv4.identification = (u16)((load_half(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 16;
 
             hdr->ipv4.flags = (u8)((load_byte(pkt, BYTES(ebpf_packetOffsetInBits)) >> 5) & EBPF_MASK(u8, 3));
             ebpf_packetOffsetInBits += 3;
 
-            hdr->ipv4.fragOffset = (u16)((load_half_ne(pkt, BYTES(ebpf_packetOffsetInBits))) & EBPF_MASK(u16, 13));
+            hdr->ipv4.fragOffset = (u16)((load_half(pkt, BYTES(ebpf_packetOffsetInBits))) & EBPF_MASK(u16, 13));
             ebpf_packetOffsetInBits += 13;
 
             hdr->ipv4.ttl = (u8)((load_byte(pkt, BYTES(ebpf_packetOffsetInBits))));
@@ -66,13 +71,13 @@ static __always_inline int run_parser(struct __sk_buff *skb, struct my_ingress_h
             hdr->ipv4.protocol = (u8)((load_byte(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 8;
 
-            hdr->ipv4.hdrChecksum = (u16)((load_half_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ipv4.hdrChecksum = (u16)((load_half(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 16;
 
-            hdr->ipv4.srcAddr = (u32)((load_word_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ipv4.srcAddr = (u32)((load_word(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 32;
 
-            hdr->ipv4.dstAddr = (u32)((load_word_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ipv4.dstAddr = (u32)((load_word(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 32;
 
             hdr->ipv4.ebpf_valid = 1;
@@ -91,20 +96,20 @@ static __always_inline int run_parser(struct __sk_buff *skb, struct my_ingress_h
                 goto reject;
             }
 
-            hdr->ethernet.dstAddr = (u64)(load_dword_ne(pkt, BYTES(ebpf_packetOffsetInBits)));
+            hdr->ethernet.dstAddr = (u64)((load_dword(pkt, BYTES(ebpf_packetOffsetInBits)) >> 16) & EBPF_MASK(u64, 48));
             ebpf_packetOffsetInBits += 48;
 
-            hdr->ethernet.srcAddr = (u64)(load_dword_ne(pkt, BYTES(ebpf_packetOffsetInBits)));
+            hdr->ethernet.srcAddr = (u64)((load_dword(pkt, BYTES(ebpf_packetOffsetInBits)) >> 16) & EBPF_MASK(u64, 48));
             ebpf_packetOffsetInBits += 48;
 
-            hdr->ethernet.etherType = (u16)((load_half_ne(pkt, BYTES(ebpf_packetOffsetInBits))));
+            hdr->ethernet.etherType = (u16)((load_half(pkt, BYTES(ebpf_packetOffsetInBits))));
             ebpf_packetOffsetInBits += 16;
 
             hdr->ethernet.ebpf_valid = 1;
 
 ;
             u16 select_1;
-            select_1 = bpf_ntohs(hdr->ethernet.etherType);
+            select_1 = hdr->ethernet.etherType;
             if (select_1 == 0x800)goto parse_ipv4;
             if ((select_1 & 0x0) == (0x0 & 0x0))goto reject;
             else goto reject;
@@ -124,7 +129,7 @@ static __always_inline int run_parser(struct __sk_buff *skb, struct my_ingress_h
     return -1;
 }
 
-SEC("classifier/tc-parse")
+SEC("p4tc/parse")
 int tc_parse_func(struct __sk_buff *skb) {
     struct pna_global_metadata *compiler_meta__ = (struct pna_global_metadata *) skb->cb;
     struct hdr_md *hdrMd;

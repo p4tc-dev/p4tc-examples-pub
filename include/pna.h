@@ -80,10 +80,13 @@ struct clone_session_entry {
 struct p4tc_table_entry_act_bpf_params__local {
         u32 pipeid;
         u32 tblid;
-} __attribute__((preserve_access_index));
+};
 
 struct __attribute__((__packed__)) p4tc_table_entry_act_bpf {
         u32 act_id;
+	u32 hit:1,
+           is_default_miss_act:1,
+           is_default_hit_act:1;
         u8 params[124];
 };
 
@@ -91,11 +94,22 @@ struct p4tc_table_entry_create_bpf_params__local {
         u32 profile_id;
         u32 pipeid;
         u32 tblid;
+        u32 handle;
+        u32 classid;
+        u32 chain;
+        u16 proto;
+        u16 prio;
 };
 
 /* Regular table lookup */
 extern struct p4tc_table_entry_act_bpf *
 bpf_p4tc_tbl_read(struct __sk_buff *skb_ctx,
+		  struct p4tc_table_entry_act_bpf_params__local *params,
+		  void *key, const __u32 key__sz) __ksym;
+
+/* Regular table lookup */
+extern struct p4tc_table_entry_act_bpf *
+xdp_p4tc_tbl_read(struct xdp_md *skb_ctx,
 		  struct p4tc_table_entry_act_bpf_params__local *params,
 		  void *key, const __u32 key__sz) __ksym;
 
@@ -121,10 +135,10 @@ bpf_p4tc_entry_create_on_miss(struct __sk_buff *skb_ctx,
 			      struct p4tc_table_entry_act_bpf *act_bpf) __ksym;
 
 extern int
-xdp_p4tc_tbl_entry_create_on_miss(struct xdp_md *xdp_ctx,
-				  struct p4tc_table_entry_create_bpf_params__local *params,
-				  void *key, const u32 key__sz,
-				  struct p4tc_table_entry_act_bpf *act_bpf) __ksym;
+xdp_p4tc_entry_create_on_miss(struct xdp_md *xdp_ctx,
+			      struct p4tc_table_entry_create_bpf_params__local *params,
+			      void *key, const u32 key__sz,
+			      struct p4tc_table_entry_act_bpf *act_bpf) __ksym;
 
 /* No mapping to PNA, but are useful utilities */
 extern int
