@@ -20,7 +20,7 @@ control Main(
             istd.input_port : exact @tc_type("dev") @name("input_port");
             hdr.ipv4.srcAddr : exact @tc_type("ipv4") @name("srcAddr");
             hdr.ipv4.dstAddr : exact @tc_type("ipv4") @name("dstAddr");
-            hdr.ipv4.protocol : exact;
+            hdr.ipv4.protocol : exact; @name("protocol");
             meta.srcPort : exact @tc_type("be16") @name("srcPort");
             meta.dstPort : exact @tc_type("be16") @name("dstPort");
         }

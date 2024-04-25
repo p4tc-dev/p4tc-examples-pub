@@ -32,7 +32,7 @@
         },
         {
           "id" : 4,
-          "name" : "hdr.ipv4.protocol",
+          "name" : "protocol",
           "type" : "bit8",
           "match_type" : "exact",
           "bitwidth" : 8

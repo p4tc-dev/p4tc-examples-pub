@@ -3,7 +3,8 @@
 #
 ## Argument for the CLANG compiler
 CLANG ?= clang
-PROG ?= generated/flowtracker
+PROG ?= flowtracker
+GEN ?= generated/flowtracker
 #we need to have a headers package instead of this..
 INCLUDES= -I../../include
 # Optimization flags to save space
@@ -14,10 +15,10 @@ CFLAGS+= -O2 -g -c -D__KERNEL__ -D__ASM_SYSREG_H -DBTF \
 	 -Wno-address-of-packed-member -Wno-tautological-compare \
 	 -Wno-unknown-warning-option -Wnoparentheses-equality
 
-TMPL+=$(PROG).template
-TMPL+=$(PROG).json
-SRCS+=$(PROG)_parser.c
-SRCS+=$(PROG)_control_blocks.c
+TMPL+=$(GEN).template
+TMPL+=$(GEN).json
+SRCS+=$(GEN)_parser.c
+SRCS+=$(GEN)_control_blocks.c
 OBJS=$(SRCS:.c=.o)
 all: $(OBJS)
 
@@ -25,10 +26,10 @@ $(OBJS): %.o : %.c
 	$(CLANG) $(CFLAGS) $(INCLUDES) --target=bpf -mcpu=probe -c $< -o $@
 
 generate:
-	p4c-pna-p4tc $(PROG).p4 -o .
+	p4c-pna-p4tc $(PROG).p4 -o ./generated
 
 clean:
 	rm -f $(OBJS)
 
 realclean:
-	rm -f $(OBJS) $(SRCS) $(TMPL) $(PROG)_parser.h
+	rm -f $(OBJS) $(SRCS) $(TMPL)

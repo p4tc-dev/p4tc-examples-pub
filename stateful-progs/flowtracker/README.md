@@ -155,10 +155,10 @@ If you wait for 30 seconds without typing anything on the nc window (terminal 3)
 Other commands
 ---------------
 to dump the table entries:
-`tc p4ctrl get flowtracker/table/Main/ct_tcp_table`
+`tc p4ctrl get flowtracker/table/Main/ct_flow_table`
 
 Dump in json format:
-`tc -j p4ctrl get flowtracker/table/Main/ct_tcp_table`
+`tc -j p4ctrl get flowtracker/table/Main/ct_flow_table`
 
 To cleanup
 ----------

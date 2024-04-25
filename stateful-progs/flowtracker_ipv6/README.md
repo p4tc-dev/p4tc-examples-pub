@@ -54,7 +54,7 @@ First enter the container and make sure you have the introspection path setup
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub//stateful-progs/flowtracker_ipv6/generated
+cd /home/vagrant/p4tc-examples-pub/stateful-progs/flowtracker_ipv6/generated
 export INTROSPECTION=.
 TC="/usr/sbin/tc"
 ```
@@ -160,11 +160,11 @@ Other commands
 ---------------
 to dump the table entries:
 
-`tc p4ctrl get flowtracker_ipv6/table/Main/ct_tcp_table`
+`tc p4ctrl get flowtracker_ipv6/table/Main/ct_flow_table`
 
 Dump in json format:
 
-`tc -j p4ctrl get flowtracker_ipv6/table/Main/ct_tcp_table`
+`tc -j p4ctrl get flowtracker_ipv6/table/Main/ct_flow_table`
 
 To cleanup
 ----------
