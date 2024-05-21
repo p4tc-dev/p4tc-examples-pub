@@ -25,7 +25,7 @@ cd /home/vagrant/p4tc-examples-pub/simple/redirect_l2/generated
 export INTROSPECTION=.
 ```
 run TC monitor:
-`$TC mon`
+`$TC mon p4 events`
 
 ### Terminal 2 (observes incoming traffic into p4node)
 

@@ -44,7 +44,7 @@ export INTROSPECTION=.
 
 run TC monitor:
 
-`$TC mon`
+`$TC mon p4 events`
 
 ### Terminal 2
 
@@ -71,8 +71,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname flowtracker_ipv6 \
-action bpf obj flowtracker_ipv6_parser.o section classifier/tc-parse \
-action bpf obj flowtracker_ipv6_control_blocks.o section classifier/tc-ingress
+action bpf obj flowtracker_ipv6_parser.o section p4tc/parse \
+action bpf obj flowtracker_ipv6_control_blocks.o section p4tc/main
 ```
 
 let's run the nc server inside the container... Note this step is not necessary unless you want to keep the flow alive on the P4 side.

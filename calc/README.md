@@ -49,7 +49,7 @@ cd /home/vagrant/p4tc-examples-pub/calc/generated
 export INTROSPECTION=.
 ```
 run TC monitor:
-`$TC mon`
+`$TC mon p4 events`
 
 ### Terminal 2 (watch traffic calculator traffic going into p4node0)
 

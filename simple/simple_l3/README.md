@@ -25,7 +25,7 @@ setup the path to where the json introspection file can be found..
 
 run TC monitor:
 
-`$TC mon`
+`$TC mon p4 events`
 
 ### Terminal 2
 
