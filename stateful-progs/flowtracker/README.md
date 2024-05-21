@@ -65,8 +65,8 @@ now instantiate the prog
 
 ```
 $TC filter add block 21 ingress protocol all prio 10 p4 pname flowtracker \
-action bpf obj flowtracker_parser.o section classifier/tc-parse \
-action bpf obj flowtracker_control_blocks.o section classifier/tc-ingress
+action bpf obj flowtracker_parser.o section p4tc/parse \
+action bpf obj flowtracker_control_blocks.o section p4tc/main
 ```
 
 let's run the nc server inside the container... Note this step is not necessary unless you want to keep the flow alive on the P4 side.
