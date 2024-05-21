@@ -38,7 +38,7 @@ export INTROSPECTION=.
 
 run TC monitor:
 
-`$TC mon`
+`$TC mon p4 events`
 
 ### Terminal 2
 
