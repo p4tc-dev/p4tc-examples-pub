@@ -174,14 +174,13 @@ struct p4tc_ext_bpf_params {
         u32 ext_id;
         u32 inst_id;
         u32 index;
-        u32 param_id;
         u32 flags;
         u8  in_params[128]; /* extern specific params if any */
 };
 
-struct p4tc_ext_bpf_res {
+struct p4tc_ext_bpf_val {
         u32 ext_id;
-        u32 index_id;
+        u32 index;
         u32 verdict;
         u8 out_params[128]; /* specific values if any */
 };
@@ -190,68 +189,63 @@ struct p4tc_ext_bpf_res {
 extern int
 bpf_p4tc_extern_indirect_count_pktsnbytes(struct __sk_buff *skb_ctx,
 					  struct p4tc_ext_bpf_params *params,
-					  struct p4tc_ext_bpf_res *res) __ksym;
+					  const u32 params__sz) __ksym;
 
 extern int
 bpf_p4tc_extern_indirect_count_pktsonly(struct __sk_buff *skb_ctx,
 					struct p4tc_ext_bpf_params *params,
-					struct p4tc_ext_bpf_res *res) __ksym;
+					const u32 params__sz) __ksym;
 
 extern int
 bpf_p4tc_extern_indirect_count_bytesonly(struct __sk_buff *skb_ctx,
 					 struct p4tc_ext_bpf_params *params,
-					 struct p4tc_ext_bpf_res *res) __ksym;
+					 const u32 params__sz) __ksym;
 
 extern int
 xdp_p4tc_extern_indirect_count_pktsnbytes(struct xdp_md *xdp_ctx,
 					  struct p4tc_ext_bpf_params *params,
-					  struct p4tc_ext_bpf_res *res) __ksym;
+					  const u32 params__sz) __ksym;
 
 extern int
 xdp_p4tc_extern_indirect_count_pktsonly(struct xdp_md *xdp_ctx,
 					struct p4tc_ext_bpf_params *params,
-					struct p4tc_ext_bpf_res *res) __ksym;
+					const u32 params__sz) __ksym;
 
 extern int
 xdp_p4tc_extern_indirect_count_bytesonly(struct xdp_md *xdp_ctx,
 					 struct p4tc_ext_bpf_params *params,
-					 struct p4tc_ext_bpf_res *res) __ksym;
+					 const u32 params__sz) __ksym;
 
 extern int bpf_p4tc_extern_meter_bytes_color(struct __sk_buff *skb_ctx,
                                              struct p4tc_ext_bpf_params *params,
-                                             struct p4tc_ext_bpf_res *res,
-                                             u8 color) __ksym;
+                                             const u32 params__sz) __ksym;
 
 extern int bpf_p4tc_extern_meter_bytes(struct __sk_buff *skb_ctx,
-				       struct p4tc_ext_bpf_params *params,
-				       struct p4tc_ext_bpf_res *res) __ksym;
+                                       struct p4tc_ext_bpf_params *params,
+                                       const u32 params__sz) __ksym;
 
 extern int bpf_p4tc_extern_meter_pkts_color(struct __sk_buff *skb_ctx,
                                             struct p4tc_ext_bpf_params *params,
-                                            struct p4tc_ext_bpf_res *res,
-                                            u8 color) __ksym;
+                                            const u32 params__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_pkts(struct xdp_md *xdp_ctx,
-				      struct p4tc_ext_bpf_params *params,
-				      struct p4tc_ext_bpf_res *res) __ksym;
+                                      struct p4tc_ext_bpf_params *params,
+                                      const u32 params__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_bytes_color(struct xdp_md *xdp_ctx,
-                                             struct p4tc_ext_bpf_params *params,
-                                             struct p4tc_ext_bpf_res *res,
-                                             u8 color) __ksym;
+                                             const u32 params__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_bytes(struct xdp_md *xdp_ctx,
-				       struct p4tc_ext_bpf_params *params,
-				       struct p4tc_ext_bpf_res *res) __ksym;
+                                       struct p4tc_ext_bpf_params *params,
+                                       const u32 params__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_pkts_color(struct xdp_md *xdp_ctx,
                                             struct p4tc_ext_bpf_params *params,
-                                            struct p4tc_ext_bpf_res *res,
-                                            u8 color) __ksym;
+                                            const u32 params__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_pkts(struct xdp_md *xdp_ctx,
-				      struct p4tc_ext_bpf_params *params,
-				      struct p4tc_ext_bpf_res *res) __ksym;
+                                      struct p4tc_ext_bpf_params *params,
+                                      const u32 params__sz) __ksym;
 
 /* Start checksum related kfuncs */
 struct p4tc_ext_csum_params {
@@ -262,44 +256,55 @@ struct p4tc_ext_csum_params {
 /* Basic checksums are not implemented in DPDK */
 extern u16
 bpf_p4tc_ext_csum_crc16_add(struct p4tc_ext_csum_params *params,
-			    const void *data, const u32 data__sz) __ksym;
+                            const u32 params__sz,
+                            const void *data, const u32 data__sz) __ksym;
 
 extern u16
-bpf_p4tc_ext_csum_crc16_get(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_crc16_get(struct p4tc_ext_csum_params *params,
+                            const u32 params__sz) __ksym;
 
 extern void
-bpf_p4tc_ext_csum_crc16_clear(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_crc16_clear(struct p4tc_ext_csum_params *params,
+                              const u32 params__sz) __ksym;
 
 /* Equivalent to PNA CRC32 checksum */
 /* Basic checksums are not implemented in DPDK */
 extern u32
 bpf_p4tc_ext_csum_crc32_add(struct p4tc_ext_csum_params *params,
+                            const u32 params__sz,
                             const void *data, const u32 data__sz) __ksym;
 
 extern u32
-bpf_p4tc_ext_csum_crc32_get(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_crc32_get(struct p4tc_ext_csum_params *params,
+                            const u32 params__sz) __ksym;
 
 extern void
-bpf_p4tc_ext_csum_crc32_clear(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_crc32_clear(struct p4tc_ext_csum_params *params,
+                              const u32 params__sz) __ksym;
 
 extern u16
-bpf_p4tc_ext_csum_16bit_complement_get(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_16bit_complement_get(struct p4tc_ext_csum_params *params,
+                                       const u32 params__sz) __ksym;
 
 /* Equivalent to PNA 16bit complement checksum (incremental checksum) */
 extern __wsum
 bpf_p4tc_ext_csum_16bit_complement_add(struct p4tc_ext_csum_params *params,
+                                       const u32 params__sz,
                                        const void *data, int len) __ksym;
 
 extern int
 bpf_p4tc_ext_csum_16bit_complement_sub(struct p4tc_ext_csum_params *params,
+                                       const u32 params__sz,
                                        const void *data, const u32 data__sz) __ksym;
 
 extern void
-bpf_p4tc_ext_csum_16bit_complement_clear(struct p4tc_ext_csum_params *params) __ksym;
+bpf_p4tc_ext_csum_16bit_complement_clear(struct p4tc_ext_csum_params *params,
+                                         const u32 params__sz) __ksym;
 
 extern void
 bpf_p4tc_ext_csum_16bit_complement_set_state(struct p4tc_ext_csum_params *params,
-					     u16 csum) __ksym;
+                                             const u32 params__sz,
+                                             u16 csum) __ksym;
 
 /* Equivalent to PNA crc16 hash */
 extern u16
@@ -308,7 +313,7 @@ bpf_p4tc_ext_hash_crc16(const void *data, int len, u16 seed) __ksym;
 /* Equivalent to PNA crc16 hash base */
 static inline u16
 bpf_p4tc_ext_hash_base_crc16(const void *data, const u32 data__sz,
-			     u32 base, u32 max, u16 seed) {
+                             u32 base, u32 max, u16 seed) {
 	u16 hash = bpf_p4tc_ext_hash_crc16(data, data__sz, seed);
 
 	return (base + (hash % max));
@@ -363,24 +368,30 @@ xdp_p4tc_is_host_port(struct xdp_md *xdp_ctx, const u32 ifindex) __ksym;
 
 
 /* Extern control path read (for example, used for register read) */
-extern int bpf_p4tc_extern_md_read(struct __sk_buff *skb_ctx,
-				   struct p4tc_ext_bpf_params *params,
-				   struct p4tc_ext_bpf_res *res) __ksym;
+extern struct p4tc_ext_bpf_val *
+bpf_p4tc_extern_md_read(struct __sk_buff *skb_ctx,
+			struct p4tc_ext_bpf_params *params,
+			const u32 params__sz) __ksym;
 
 /* Extern control path write (for example, used for register write) */
 extern int bpf_p4tc_extern_md_write(struct __sk_buff *skb_ctx,
 				    struct p4tc_ext_bpf_params *params,
-				    struct p4tc_ext_bpf_res *res) __ksym;
+				    const u32 params__sz,
+				    struct p4tc_ext_bpf_val *val,
+				    const u32 val__sz) __ksym;
 
 /* Extern control path read (for example, used for register read) for XDP */
-extern int xdp_p4tc_extern_md_read(struct xdp_md *xdp_ctx,
-				   struct p4tc_ext_bpf_params *params,
-				   struct p4tc_ext_bpf_res *res) __ksym;
+extern struct p4tc_ext_bpf_val *
+xdp_p4tc_extern_md_read(struct xdp_md *xdp_ctx,
+			struct p4tc_ext_bpf_params *params,
+			const u32 params__sz) __ksym;
 
 /* Extern control path read (for example, used for register write for XDP */
 extern int xdp_p4tc_extern_md_write(struct xdp_md *xdp_ctx,
 				    struct p4tc_ext_bpf_params *params,
-				    struct p4tc_ext_bpf_res *res) __ksym;
+				    const u32 params__sz,
+				    struct p4tc_ext_bpf_val *val,
+				    const u32 val__sz) __ksym;
 
 /* Timestamp  PNA extern */
 static inline u64 bpf_p4tc_extern_timestamp() {
