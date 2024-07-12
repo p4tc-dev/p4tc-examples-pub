@@ -169,10 +169,14 @@ xdp_p4tc_entry_delete(struct xdp_md *xdp_ctx,
 		      const u32 params__sz,
 		      void *key, const u32 key__sz) __ksym;
 
+#define P4TC_EXT_CNT_DIRECT (1 << 0)
+#define P4TC_EXT_CNT_INDIRECT (1 << 1)
+
 struct p4tc_ext_bpf_params {
         u32 pipe_id;
         u32 ext_id;
         u32 inst_id;
+        u32 tbl_id;
         u32 index;
         u32 flags;
         u8  in_params[128]; /* extern specific params if any */
@@ -187,34 +191,34 @@ struct p4tc_ext_bpf_val {
 
 /* Equivalent to PNA indirect counters */
 extern int
-bpf_p4tc_extern_indirect_count_pktsnbytes(struct __sk_buff *skb_ctx,
-					  struct p4tc_ext_bpf_params *params,
-					  const u32 params__sz) __ksym;
+bpf_p4tc_extern_count_pktsnbytes(struct __sk_buff *skb_ctx,
+				 struct p4tc_ext_bpf_params *params,
+				 const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int
-bpf_p4tc_extern_indirect_count_pktsonly(struct __sk_buff *skb_ctx,
-					struct p4tc_ext_bpf_params *params,
-					const u32 params__sz) __ksym;
+bpf_p4tc_extern_count_pkts(struct __sk_buff *skb_ctx,
+			   struct p4tc_ext_bpf_params *params,
+			   const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int
-bpf_p4tc_extern_indirect_count_bytesonly(struct __sk_buff *skb_ctx,
-					 struct p4tc_ext_bpf_params *params,
-					 const u32 params__sz) __ksym;
+bpf_p4tc_extern_count_bytes(struct __sk_buff *skb_ctx,
+			    struct p4tc_ext_bpf_params *params,
+			    const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_indirect_count_pktsnbytes(struct xdp_md *xdp_ctx,
-					  struct p4tc_ext_bpf_params *params,
-					  const u32 params__sz) __ksym;
+xdp_p4tc_extern_count_pktsnbytes(struct __sk_buff *skb_ctx,
+				 struct p4tc_ext_bpf_params *params,
+				 const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_indirect_count_pktsonly(struct xdp_md *xdp_ctx,
-					struct p4tc_ext_bpf_params *params,
-					const u32 params__sz) __ksym;
+xdp_p4tc_extern_count_pkts(struct __sk_buff *skb_ctx,
+			   struct p4tc_ext_bpf_params *params,
+			   const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_indirect_count_bytesonly(struct xdp_md *xdp_ctx,
-					 struct p4tc_ext_bpf_params *params,
-					 const u32 params__sz) __ksym;
+xdp_p4tc_extern_count_bytes(struct __sk_buff *skb_ctx,
+			    struct p4tc_ext_bpf_params *params,
+			    const u32 params__sz, void *key, const u32 key__sz) __ksym;
 
 extern int bpf_p4tc_extern_meter_bytes_color(struct __sk_buff *skb_ctx,
                                              struct p4tc_ext_bpf_params *params,
@@ -290,7 +294,7 @@ bpf_p4tc_ext_csum_16bit_complement_get(struct p4tc_ext_csum_params *params,
 extern __wsum
 bpf_p4tc_ext_csum_16bit_complement_add(struct p4tc_ext_csum_params *params,
                                        const u32 params__sz,
-                                       const void *data, int len) __ksym;
+                                       const void *data, const u32 data__sz) __ksym;
 
 extern int
 bpf_p4tc_ext_csum_16bit_complement_sub(struct p4tc_ext_csum_params *params,
