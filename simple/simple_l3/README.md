@@ -42,21 +42,23 @@ Now let's listen to traffic on port0
 
 we will run commands to first load the prog and then do any runtime setup.
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 `sudo ip netns exec p4node /bin/bash`
-`cd /home/vagrant/p4tc-examples-pub/simple/simple_l3/generated`
-`export INTROSPECTION=.`
-`TC="/usr/sbin/tc"`
-
-Load the simple_l3 program
-
-`./simple_l3.template`
-
+`cd /home/vagrant/p4tc-examples-pub/simple/simple_l3
 
 Compile the parser and control blocks programs if you have not already
 
 `make`
+
+Make sure you have the introspection file set and load the simple_l3 program
+
+```
+cd generated/
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+./simple_l3.template
+```
 
 now instantiate the prog
 
@@ -95,9 +97,9 @@ Note that the second program *simple_l3_control_blocks.o* is not hit at all..
 
 Back to <u>terminal 4</u>, let's send a udp packet that will be accepted by the parser but dropped by the main program because of a table miss...
 
-`cd /home/vagrant/p4tc-examples-pub/simple/simple_l3/generated`
+`cd /home/vagrant/p4tc-examples-pub/simple/simple_l3/`
 
-`sudo ../../sendpacket/sendpacket.py ./testpkt.yml`
+`sudo ../../../sendpacket/sendpacket.py ./testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -139,7 +141,7 @@ Now you can see the rewritten mac address when you generate traffic on <u>termin
 
 Delete the entry we created
 
-`$TC p4ctrl delete simple_l3/table/ingress/nh_table srcAddr 10.99.0.1/32`
+`$TC p4ctrl delete simple_l3/table/ingress/nh_table dstAddr 10.99.0.1/32`
 
 dump the table to check
 
@@ -165,10 +167,6 @@ Key fields for table nh_table:
 	 key match type 	 exact
 
 Actions for table nh_table:
-	  act name ingress/drop
-	  act id 2
-
-
 	  act name ingress/send_nh
 	  act id 1
 
@@ -184,6 +182,9 @@ Actions for table nh_table:
 	    param name dstMac
 	    param id 3
 	    param type macaddr
+
+	  act name ingress/drop
+	  act id 2
 ```
 
 To cleanup
