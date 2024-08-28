@@ -44,22 +44,25 @@ tcpdump -n -i $DEV -e
 
 We will run commands to first load the prog and then do required runtime setup.
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/simple/redirect_l2/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/simple/redirect_l2
 ```
-
-Load the *redirect_l2* program
-
-`./redirect_l2.template`
 
 Compile the parser and control blocks programs if you have not already
 
 `make`
+
+Make sure you have the introspection path setup and load the *redirect_l2* program
+
+```
+cd generated
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+./redirect_l2.template
+```
 
 now instantiate the prog
 
@@ -98,9 +101,9 @@ Note that the main program (redirect_l2_control_blocks.o) did not receive any pa
 
 Back to <u>terminal 4</u>, let's send a udp packet that will be accepted by the parser but dropped by the main program because of a table miss...
 
-`cd /home/vagrant/p4tc-examples-pub/simple/redirect_l2/generated`
+`cd /home/vagrant/p4tc-examples-pub/simple/redirect_l2`
 
-`sudo ../../sendpacket/sendpacket.py ./testpkt.yml`
+`sudo ../../../sendpacket/sendpacket.py ./testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -162,10 +165,6 @@ Key fields for table nh_table:
 	 key match type 	 exact
 
 Actions for table nh_table:
-	  act name ingress/drop
-	  act id 2
-
-
 	  act name ingress/send_nh
 	  act id 1
 
@@ -183,8 +182,7 @@ Actions for table nh_table:
 	    param type macaddr
 ```
 
-Above is indicating the table has a key called srcAddr which is type ipv4 address and that it takes two actions:
-  - *drop* which has no params
+Above is indicating the table has a key called srcAddr which is type ipv4 address and that it takes one action:
   - *send_nh* which takes 3 params 1)*port_id*, a linux netdev 2) *dmac*, a mac address 3) *smac*, also a mac address
 
 And help on the *delete* command:
