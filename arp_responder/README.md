@@ -32,7 +32,7 @@ run TC monitor:
 
 ### Terminal 2
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 `sudo ip netns exec p4node /bin/bash`
 
@@ -47,22 +47,25 @@ tcpdump -n -i $DEV -e
 
 we will run commands to first load the prog and then do any runtime setup.
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/arp_responder/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/arp_responder/
 ```
-
-Load the arp_respond program
-
-`./arp_respond.template`
 
 Compile the parser and control blocks programs if you have not already
 
 `make`
+
+Make sure you have the introspection path setup and load the arp\_respond program
+
+```
+cd generated
+TC="/usr/sbin/tc"
+export INTROSPECTION=.
+./arp_respond.template
+```
 
 now instantiate the prog
 
@@ -144,11 +147,11 @@ vagrant@p4tc:~$ ip n ls
 
 Retrieve the entry we created
 
-`$TC p4ctrl get arp_respond/table/ingress/arp_table srcAddr 10.0.0.20/32`
+`$TC p4ctrl get arp_respond/table/ingress/arp_table IPaddr 10.0.0.20/32`
 
 Delete the entry we created
 
-`$TC p4ctrl delete arp_respond/table/ingress/arp_table srcAddr 10.0.0.20/32`
+`$TC p4ctrl delete arp_respond/table/ingress/arp_table IPaddr 10.0.0.20/32`
 
 dump the table to check
 
