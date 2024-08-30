@@ -44,22 +44,25 @@ run TC monitor:
 
 we will run commands to first instatiate the prog and then do any runtime setup
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/stateful-progs/flowtracker/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/stateful-progs/flowtracker
 ```
-
-Run the template script to prescribe the program - watch for tc mon(terminal 1) to see things happening
-
-`./flowtracker.template`
 
 Compile the parser and control blocks ebpf programs if you havent already
 
 `make`
+
+Make sure you have the introspection path setup, run the template script to prescribe the program and watch for tc mon(terminal 1) to see things happening
+
+```
+cd generated
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+./flowtracker.template
+```
 
 now instantiate the prog
 
@@ -88,42 +91,15 @@ You should immediately see on on <u>terminal 1</u> an event advertising that a t
      input_port id:1 size:32b type:dev exact fieldval  port0
      srcAddr id:2 size:32b type:ipv4 exact fieldval  10.0.0.1/32
      dstAddr id:3 size:32b type:ipv4 exact fieldval  10.0.0.2/32
-     hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6
-     srcPort id:5 size:16b type:be16 exact fieldval  36876
-     dstPort id:6 size:16b type:be16 exact fieldval  1234
+     hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6/0xff
+     srcPort id:5 size:16b type:be16 exact fieldval  36876/0xffff
+     dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
     created by: kernel (id 1)
     dynamic true
     table aging 30000
-
-    tmpl created false
-          Extern kind Counter
-          Extern instance global_counter
-          Extern key 6
-          Params:
-
-          pkts  id 2 type bit32 value: 0
-          bytes  id 3 type bit64 value: 0
 ```
 
 Type a few characters followed by CR key if you want to keep this flow alive..
-
-Right after you can retrive the counter values the counter using the extern get command:
-
-```
-$TC p4ctrl get flowtracker/extern/Counter/global_counter tc_key index 6
- total exts 0
- 
-         extern order 1:
-           Extern kind Counter
-           Extern instance global_counter
-           Extern key 6
-           Params:
- 
-           pkts  id 2 type bit32 value: 1
-           bytes  id 3 type bit64 value: 60
-```
-
-Note that we specified the key (6) according to the value showed in the entry create event.
 
 If you wait for 30 seconds without typing anything on the nc window (terminal 3) you will see the entry getting expired by the kernel idle timer, as such:
 
@@ -134,31 +110,24 @@ If you wait for 30 seconds without typing anything on the nc window (terminal 3)
       input_port id:1 size:32b type:dev exact fieldval  port0
       srcAddr id:2 size:32b type:ipv4 exact fieldval  10.0.0.1/32
       dstAddr id:3 size:32b type:ipv4 exact fieldval  10.0.0.2/32
-      hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6
-      srcPort id:5 size:16b type:be16 exact fieldval  36876
-      dstPort id:6 size:16b type:be16 exact fieldval  1234
+      hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6/0xff
+      srcPort id:5 size:16b type:be16 exact fieldval  36876/0xffff
+      dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
      created by: kernel (id 1)
      deleted by: timer (id 3)
      dynamic true
      table aging 30000
      created 30 sec    used 30 sec
      tmpl created false
-           Extern kind Counter
-           Extern instance global_counter
-           Extern key 6
-           Params:
- 
-           pkts  id 2 type bit32 value: 1
-           bytes  id 3 type bit64 value: 60
 ```
 
 Other commands
 ---------------
 to dump the table entries:
-`tc p4ctrl get flowtracker/table/Main/ct_flow_table`
+`$TC p4ctrl get flowtracker/table/Main/ct_flow_table`
 
 Dump in json format:
-`tc -j p4ctrl get flowtracker/table/Main/ct_flow_table`
+`$TC -j p4ctrl get flowtracker/table/Main/ct_flow_table`
 
 To cleanup
 ----------

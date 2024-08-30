@@ -43,22 +43,29 @@ tcpdump -n -i $DEV -e
 
 we will run commands to first load the prog and then do any runtime setup on this terminal.
 
-First enter the container and make sure you have the introspection path setup correctly.
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/tunnels/ipip/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/tunnels/ipip
 ```
-
-Load the ipip program
-
-`./ipip.template`
 
 Compile the runtime parser and control blocks programs if you have not already
 
 `make`
+
+Make sure you have the introspection path setup correctly and load the ipip program
+
+```
+cd generated
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+./ipip.template
+```
+
+Load the ext\_csum module:
+
+`modprobe ext_csum`
 
 now instantiate the prog
 
@@ -98,7 +105,7 @@ Note that the second program *ipip_control_blocks.o* is not hit at all..
 
 Back to <u>terminal 4</u>, lets send a udp packet that will exercise the default entries
 
-`sudo /home/vagrant/sendpacket/sendpacket.py ./testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/tunnels/ipip/testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -142,8 +149,8 @@ pipeline:  ipip(id 1)
     entry actions:
 	action order 1: ipip/Main/set_ipip  index 1 ref 1 bind 1
 	 params:
-	  src type ipv4  value: 2.2.2.2/32 id 1
-	  dst type ipv4  value: 2.4.4.8/32 id 2
+	  src type ipv4  value: 2.2.2.2 id 1
+	  dst type ipv4  value: 2.4.4.8 id 2
 	  port type dev  value: port1 id 3
 
     created by: tc (id 2)
@@ -158,11 +165,11 @@ On terminal 3 watch egressing port1 traffic:
 
 Now you can see the rewritten headers when you generate traffic on <u>terminal 4</u> as follows, first for plain ipv4:
 
-`sudo /home/vagrant/sendpacket/sendpacket.py ./testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt.yml`
 
 then for ipip encaped packets:
 
-`sudo /home/vagrant/sendpacket/sendpacket.py ./testpkt-ipip.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt-ipip.yml`
 
 Above packets are received on port1 and will be dropped by default because port1 has no entry in the table *fwd_table*. Check by running `$TC -s filter ls block 21 ingress` and see the stats on `action order 2: bpf ipip_control_blocks.o`.
 
@@ -175,7 +182,7 @@ action set_nh param dmac 66:33:34:35:46:01 param port port0
 
 Then repeat the traffic test:
 
-`sudo ./sendpacket/sendpacket.py ./testpkt-ipip.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt-ipip.yml`
 
 if you run tcpdump on port1, you will see:
 
@@ -196,7 +203,7 @@ And on port0, you should see:
 
 Delete the entry we created
 
-`$TC p4ctrl create ipip/table/Main/fwd_table port port0`
+`$TC p4ctrl delete ipip/table/Main/fwd_table port port0`
 
 dump the table to check if any entry exists
 

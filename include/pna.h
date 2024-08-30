@@ -169,9 +169,6 @@ xdp_p4tc_entry_delete(struct xdp_md *xdp_ctx,
 		      const u32 params__sz,
 		      void *key, const u32 key__sz) __ksym;
 
-#define P4TC_EXT_CNT_DIRECT (1 << 0)
-#define P4TC_EXT_CNT_INDIRECT (1 << 1)
-
 struct p4tc_ext_bpf_params {
         u32 pipe_id;
         u32 ext_id;
@@ -179,77 +176,98 @@ struct p4tc_ext_bpf_params {
         u32 tbl_id;
         u32 index;
         u32 flags;
-        u8  in_params[128]; /* extern specific params if any */
+        u8  in_params[64]; /* extern specific params if any */
 };
 
 struct p4tc_ext_bpf_val {
         u32 ext_id;
-        u32 index;
+        u32 index_id;
         u32 verdict;
-        u8 out_params[128]; /* specific values if any */
+        u8 out_params[64]; /* specific values if any */
 };
 
 /* Equivalent to PNA indirect counters */
 extern int
 bpf_p4tc_extern_count_pktsnbytes(struct __sk_buff *skb_ctx,
 				 struct p4tc_ext_bpf_params *params,
-				 const u32 params__sz, void *key, const u32 key__sz) __ksym;
+				 const u32 params__sz, void *key,
+				 const u32 key__sz) __ksym;
 
 extern int
-bpf_p4tc_extern_count_pkts(struct __sk_buff *skb_ctx,
-			   struct p4tc_ext_bpf_params *params,
-			   const u32 params__sz, void *key, const u32 key__sz) __ksym;
+bpf_p4tc_extern_count_pktsonly(struct __sk_buff *skb_ctx,
+			       struct p4tc_ext_bpf_params *params,
+			       const u32 params__sz, void *key,
+			       const u32 key__sz) __ksym;
 
 extern int
-bpf_p4tc_extern_count_bytes(struct __sk_buff *skb_ctx,
-			    struct p4tc_ext_bpf_params *params,
-			    const u32 params__sz, void *key, const u32 key__sz) __ksym;
+bpf_p4tc_extern_count_bytesonly(struct __sk_buff *skb_ctx,
+				struct p4tc_ext_bpf_params *params,
+				const u32 params__sz, void *key,
+				const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_count_pktsnbytes(struct __sk_buff *skb_ctx,
+xdp_p4tc_extern_count_pktsnbytes(struct xdp_md *xdp_ctx,
 				 struct p4tc_ext_bpf_params *params,
-				 const u32 params__sz, void *key, const u32 key__sz) __ksym;
+				 const u32 params__sz, void *key,
+				 const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_count_pkts(struct __sk_buff *skb_ctx,
-			   struct p4tc_ext_bpf_params *params,
-			   const u32 params__sz, void *key, const u32 key__sz) __ksym;
+xdp_p4tc_extern_count_pktsonly(struct xdp_md *xdp_ctx,
+			       struct p4tc_ext_bpf_params *params,
+			       const u32 params__sz, void *key,
+			       const u32 key__sz) __ksym;
 
 extern int
-xdp_p4tc_extern_count_bytes(struct __sk_buff *skb_ctx,
-			    struct p4tc_ext_bpf_params *params,
-			    const u32 params__sz, void *key, const u32 key__sz) __ksym;
+xdp_p4tc_extern_count_bytesonly(struct xdp_md *xdp_ctx,
+				struct p4tc_ext_bpf_params *params,
+				const u32 params__sz, void *key,
+				const u32 key__sz) __ksym;
+
+enum meter_colors {
+        P4TC_EXTERN_METER_COLOR_RED,
+        P4TC_EXTERN_METER_COLOR_GREEN,
+        P4TC_EXTERN_METER_COLOR_YELLOW,
+};
 
 extern int bpf_p4tc_extern_meter_bytes_color(struct __sk_buff *skb_ctx,
                                              struct p4tc_ext_bpf_params *params,
-                                             const u32 params__sz) __ksym;
-
-extern int bpf_p4tc_extern_meter_bytes(struct __sk_buff *skb_ctx,
-                                       struct p4tc_ext_bpf_params *params,
-                                       const u32 params__sz) __ksym;
+                                             const u32 params__sz, void *key,
+					     const u32 key__sz) __ksym;
+extern int
+bpf_p4tc_extern_meter_bytes(struct __sk_buff *skb,
+                            struct p4tc_ext_bpf_params *params,
+                            const u32 params__sz, void *key,
+                            const u32 key__sz) __ksym;
 
 extern int bpf_p4tc_extern_meter_pkts_color(struct __sk_buff *skb_ctx,
                                             struct p4tc_ext_bpf_params *params,
-                                            const u32 params__sz) __ksym;
-
-extern int xdp_p4tc_extern_meter_pkts(struct xdp_md *xdp_ctx,
-                                      struct p4tc_ext_bpf_params *params,
-                                      const u32 params__sz) __ksym;
+                                            const u32 params__sz, void *key,
+					    const u32 key__sz) __ksym;
+extern int
+bpf_p4tc_extern_meter_pkts(struct __sk_buff *skb,
+                           struct p4tc_ext_bpf_params *params,
+                           const u32 params__sz, void *key,
+                           const u32 key__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_bytes_color(struct xdp_md *xdp_ctx,
-                                             const u32 params__sz) __ksym;
+                                             struct p4tc_ext_bpf_params *params,
+                                             const u32 params__sz, void *key,
+                                             const u32 key__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_bytes(struct xdp_md *xdp_ctx,
                                        struct p4tc_ext_bpf_params *params,
-                                       const u32 params__sz) __ksym;
+                                       const u32 params__sz, void *key,
+                                       const u32 key__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_pkts_color(struct xdp_md *xdp_ctx,
                                             struct p4tc_ext_bpf_params *params,
-                                            const u32 params__sz) __ksym;
+                                            const u32 params__sz, void *key,
+                                            const u32 key__sz) __ksym;
 
 extern int xdp_p4tc_extern_meter_pkts(struct xdp_md *xdp_ctx,
                                       struct p4tc_ext_bpf_params *params,
-                                      const u32 params__sz) __ksym;
+                                      const u32 params__sz, void *key,
+                                      const u32 key__sz) __ksym;
 
 /* Start checksum related kfuncs */
 struct p4tc_ext_csum_params {
@@ -294,7 +312,7 @@ bpf_p4tc_ext_csum_16bit_complement_get(struct p4tc_ext_csum_params *params,
 extern __wsum
 bpf_p4tc_ext_csum_16bit_complement_add(struct p4tc_ext_csum_params *params,
                                        const u32 params__sz,
-                                       const void *data, const u32 data__sz) __ksym;
+                                       const void *data, int len) __ksym;
 
 extern int
 bpf_p4tc_ext_csum_16bit_complement_sub(struct p4tc_ext_csum_params *params,
@@ -397,6 +415,14 @@ extern int xdp_p4tc_extern_md_write(struct xdp_md *xdp_ctx,
 				    struct p4tc_ext_bpf_val *val,
 				    const u32 val__sz) __ksym;
 
+int bpf_p4tc_extern_digest_pack(struct __sk_buff *skb,
+				struct p4tc_ext_bpf_params *params,
+				const u32 params__sz) __ksym;
+
+int xdp_p4tc_extern_digest_pack(struct xdp_md *xdp_ctx,
+				struct p4tc_ext_bpf_params *params,
+				const u32 params__sz) __ksym;
+
 /* Timestamp  PNA extern */
 static inline u64 bpf_p4tc_extern_timestamp() {
 	return bpf_ktime_get_ns();
@@ -414,5 +440,150 @@ static inline u32 bpf_p4tc_extern_random(u32 min, u32 max) {
 
 #define send_to_port(x) (compiler_meta__->egress_port = x)
 #define drop_packet() (compiler_meta__->drop = true)
+
+#define BIT(x) (1 << x)
+
+#define P4TC_EXT_CNT_DIRECT (1 << 0)
+#define P4TC_EXT_CNT_INDIRECT (1 << 1)
+#define P4TC_EXT_METER_DIRECT (1 << 2)
+#define P4TC_EXT_METER_INDIRECT (1 << 3)
+
+#define P4TC_SKB_META_SET_TSTAMP BIT(0)
+#define P4TC_SKB_META_SET_MARK BIT(1)
+#define P4TC_SKB_META_SET_CLASSID BIT(2)
+#define P4TC_SKB_META_SET_TC_INDEX BIT(3)
+#define P4TC_SKB_META_SET_QMAP BIT(4)
+#define P4TC_SKB_META_SET_PROTO BIT(5)
+
+struct p4tc_skb_meta_set {
+        __u64 tstamp;
+        __u32 mark;
+        __u16 tc_classid;
+        __u16 tc_index;
+        __u16 queue_mapping;
+        __be16 protocol;
+        __u32 bitmask;
+};
+
+static inline void
+bpf_p4tc_skb_set_tstamp(struct __sk_buff *skb,
+			struct p4tc_skb_meta_set *meta_set, __u64 tstamp)
+{
+	meta_set->tstamp = tstamp;
+	meta_set->bitmask |= P4TC_SKB_META_SET_TSTAMP;
+}
+
+static inline void
+bpf_p4tc_skb_set_mark(struct __sk_buff *skb,
+		      struct p4tc_skb_meta_set *meta_set, __u32 mark)
+{
+	meta_set->mark = mark;
+	meta_set->bitmask |= P4TC_SKB_META_SET_MARK;
+}
+
+static inline void
+bpf_p4tc_skb_set_tc_classid(struct __sk_buff *skb,
+			    struct p4tc_skb_meta_set *meta_set, __u32 tc_classid)
+{
+	meta_set->tc_classid = tc_classid;
+	meta_set->bitmask |= P4TC_SKB_META_SET_CLASSID;
+}
+
+static inline void
+bpf_p4tc_skb_set_tc_index(struct __sk_buff *skb,
+			  struct p4tc_skb_meta_set *meta_set, __u16 tc_index)
+{
+	meta_set->tc_index = tc_index;
+	meta_set->bitmask |= P4TC_SKB_META_SET_TC_INDEX;
+}
+
+static inline void
+bpf_p4tc_skb_set_queue_mapping(struct __sk_buff *skb,
+			       struct p4tc_skb_meta_set *meta_set,
+			       __u16 queue_mapping)
+{
+	meta_set->tc_index = queue_mapping;
+	meta_set->bitmask |= P4TC_SKB_META_SET_QMAP;
+}
+
+static inline void
+bpf_p4tc_skb_set_protocol(struct __sk_buff *skb,
+			  struct p4tc_skb_meta_set *meta_set, __be16 protocol)
+{
+	meta_set->protocol = protocol;
+	meta_set->bitmask |= P4TC_SKB_META_SET_PROTO;
+}
+
+int bpf_p4tc_skb_meta_set(struct __sk_buff *skb,
+                          struct p4tc_skb_meta_set *skb_meta_set,
+                          u32 skb_meta_set__sz) __ksym;
+
+#define P4TC_SKB_META_GET_AT_INGRESS_BIT BIT(0)
+#define P4TC_SKB_META_GET_FROM_INGRESS_BIT BIT(1)
+
+struct p4tc_skb_meta_get {
+	u8 tc_at_ingress:1,
+	   from_ingress:1;
+	u8 bitmask;
+};
+
+static inline __u64
+bpf_p4tc_skb_get_tstamp(struct __sk_buff *skb,
+			struct p4tc_skb_meta_get *meta_get)
+{
+	return skb->tstamp;
+}
+
+static inline __u16
+bpf_p4tc_skb_get_tc_classid(struct __sk_buff *skb,
+			    struct p4tc_skb_meta_get *meta_get)
+{
+	return skb->tc_classid;
+}
+
+static inline __u16
+bpf_p4tc_skb_get_tc_index(struct __sk_buff *skb,
+			  struct p4tc_skb_meta_get *meta_get)
+{
+	return skb->tc_index;
+}
+
+static inline __u16
+bpf_p4tc_skb_get_queue_mapping(struct __sk_buff *skb,
+			       struct p4tc_skb_meta_get *meta_get)
+{
+	return skb->queue_mapping;
+}
+
+static inline __be16
+bpf_p4tc_skb_get_protocol(struct __sk_buff *skb,
+			  struct p4tc_skb_meta_get *meta_get)
+{
+	return skb->protocol;
+}
+
+static inline int
+bpf_p4tc_skb_get_tc_at_ingress(struct __sk_buff *skb,
+			       struct p4tc_skb_meta_get *meta_get)
+{
+	if (meta_get->bitmask & P4TC_SKB_META_GET_AT_INGRESS_BIT)
+		return meta_get->tc_at_ingress;
+
+	return -1;
+}
+
+static inline int
+bpf_p4tc_skb_get_from_ingress(struct __sk_buff *skb,
+			      struct p4tc_skb_meta_get *meta_get)
+{
+	if (meta_get->bitmask & P4TC_SKB_META_GET_FROM_INGRESS_BIT)
+		return meta_get->from_ingress;
+
+	return -1;
+}
+
+int bpf_p4tc_skb_meta_get(struct __sk_buff *skb,
+		          struct p4tc_skb_meta_get *skb_meta_get,
+		          u32 skb_meta_get__sz) __ksym;
 
 #endif //P4C_PNA_H

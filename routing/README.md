@@ -43,22 +43,29 @@ tcpdump -n -i $DEV -e
 
 we will run commands to first load the prog and then do any runtime setup.
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/routing/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/routing
 ```
-
-Load the routing program
-
-`./routing.template`
 
 Compile the runtime parser and control blocks programs if you have not already
 
 `make`
+
+Make sure you have the introspection path setup and load the routing program
+
+```
+cd generated/
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+./routing.template
+```
+
+Load the ext\_csum module:
+
+`modprobe ext_csum`
 
 now instantiate the prog
 
@@ -97,7 +104,7 @@ Note that the second program *routing_control_blocks.o* is not hit at all becaus
 
 Back to <u>terminal 4</u>, lets send a udp packet that will exercise the default entries
 
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/generated/testpkt.yml`
+`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -132,7 +139,7 @@ If you watch TC monitor in terminal 1, you will see an event being generated for
 created pipeline:  routing(id 1)
  table: Main/nh_table(id 1)entry priority 64000[permissions -RUD-PS-R--X--]
     entry key
-     nh_index id:1 size:32b type:bit32 exact fieldval  0
+     nh_index id:1 size:32b type:bit32 exact fieldval  0/0xffffffff
     entry actions:
 	action order 1: routing/Main/set_nh  index 1 ref 1 bind 1
 	 params:
@@ -145,7 +152,7 @@ created pipeline:  routing(id 1)
 ```
 
 Now repeat the test from earlier from the VM side:
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/generated/testpkt.yml`
+`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
 
 You should see this packet being forwarded to port1 on tcpdump.
 
@@ -208,7 +215,7 @@ root@p4tc:/home/vagrant/p4tc-examples-pub/routing/generated# $TC p4ctrl get rout
 pipeline:  routing(id 1)
  table: Main/nh_table(id 1)entry priority 64000[permissions -RUD-PS-R--X--]
     entry key
-     nh_index id:1 size:32b type:bit32 exact fieldval  1
+     nh_index id:1 size:32b type:bit32 exact fieldval  1/0xffffffff
     entry actions:
 	action order 1: routing/Main/set_nh  index 2 ref 1 bind 1
 	 params:
@@ -221,7 +228,7 @@ pipeline:  routing(id 1)
 
  table: Main/nh_table(id 1)entry priority 64000[permissions -RUD-PS-R--X--]
     entry key
-     nh_index id:1 size:32b type:bit32 exact fieldval  0
+     nh_index id:1 size:32b type:bit32 exact fieldval  0/0xffffffff
     entry actions:
 	action order 1: routing/Main/set_nh  index 1 ref 1 bind 1
 	 params:
@@ -271,7 +278,7 @@ Key fields for table fib_table:
 
 Actions for table fib_table:
 	  act name Main/set_nhid
-	  act id 2
+	  act id 3
 
 	  Params for Main/set_nhid:
 	    param name index
