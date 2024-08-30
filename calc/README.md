@@ -65,23 +65,27 @@ sudo tcpdump -n -i $DEV -e
 
 We will run commands to first load the prog and then do any runtime setup.
 
-First enter the container and make sure you have the introspection path setup
+First enter the container
 
 ```
 sudo ip netns exec p4node /bin/bash
-cd /home/vagrant/p4tc-examples-pub/calc/generated
-export INTROSPECTION=.
-TC="/usr/sbin/tc"
+cd /home/vagrant/p4tc-examples-pub/calc
 ```
-
-Load the calc program
-
-`./calc.template`
-
 
 Compile the parser and control blocks programs if you have not already
 
-`make`
+```
+make
+```
+
+Make sure you have the introspection path setup and load the calc program
+
+```
+export INTROSPECTION=.
+TC="/usr/sbin/tc"
+cd generated
+`./calc.template`
+```
 
 now instantiate the prog
 
