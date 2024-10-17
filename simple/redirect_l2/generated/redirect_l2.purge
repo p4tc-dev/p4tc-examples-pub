@@ -1,6 +1,8 @@
-TC="tc"
+#!/bin/bash
+
+: "${TC:="tc"}"
 
 $TC filter del block 21 ingress protocol all prio 10 p4
-sleep 1
+sleep 2
 $TC p4template del pipeline/redirect_l2
 rm -rf /sys/fs/bpf/tc/globals/

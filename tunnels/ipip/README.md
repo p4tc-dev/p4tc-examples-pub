@@ -165,11 +165,11 @@ On terminal 3 watch egressing port1 traffic:
 
 Now you can see the rewritten headers when you generate traffic on <u>terminal 4</u> as follows, first for plain ipv4:
 
-`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/tunnels/ipip/testpkt.yml`
 
 then for ipip encaped packets:
 
-`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt-ipip.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/tunnels/ipip/testpkt-ipip.yml`
 
 Above packets are received on port1 and will be dropped by default because port1 has no entry in the table *fwd_table*. Check by running `$TC -s filter ls block 21 ingress` and see the stats on `action order 2: bpf ipip_control_blocks.o`.
 

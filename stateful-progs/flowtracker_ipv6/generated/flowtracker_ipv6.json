@@ -1,11 +1,13 @@
 {
   "schema_version" : "1.0.0",
   "pipeline_name" : "flowtracker_ipv6",
+  "externs" : [],
   "tables" : [
     {
       "name" : "Main/ct_flow_table",
       "id" : 1,
-      "tentries" : 2048,
+      "tentries" : 1024,
+      "permissions" : "0x3da4",
       "nummask" : 8,
       "keysize" : 328,
       "keyfields" : [

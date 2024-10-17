@@ -1,9 +1,9 @@
 #!/bin/bash
 
-TC="tc"
+: "${TC:="tc"}"
 
 $TC filter del block 21 ingress protocol all prio 10 p4 pname routing
-sleep 1
+sleep 2
 rmmod ext_csum
 $TC p4template del pipeline/routing pipeid 1
 sudo rm -rf /sys/fs/bpf/tc/globals/

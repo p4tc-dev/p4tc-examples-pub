@@ -99,7 +99,7 @@ Back to <u>terminal 4</u>, let's send a udp packet that will be accepted by the 
 
 `cd /home/vagrant/p4tc-examples-pub/simple/simple_l3/`
 
-`sudo ../../../sendpacket/sendpacket.py ./testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/simple/simple_l3/testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
