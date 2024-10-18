@@ -104,7 +104,7 @@ Note that the second program *routing_control_blocks.o* is not hit at all becaus
 
 Back to <u>terminal 4</u>, lets send a udp packet that will exercise the default entries
 
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
 
 And back on <u>terminal 3</u>, check the stats
 
@@ -152,7 +152,7 @@ created pipeline:  routing(id 1)
 ```
 
 Now repeat the test from earlier from the VM side:
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
 
 You should see this packet being forwarded to port1 on tcpdump.
 
@@ -206,7 +206,7 @@ On terminal 3 watch egressing port1 traffic:
 
 Now you can see the rewritten mac address when you generate traffic on <u>terminal 4</u> as follows:
 
-`sudo sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/generated/testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/routing/testpkt.yml`
 
 Let's dump the *nh_table*
 

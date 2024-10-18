@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TC="tc"
+: "${TC:="tc"}"
 
 $TC filter del block 21 ingress protocol all prio 10 p4 pname simple_l3
 sleep 2

@@ -19,12 +19,6 @@ When the P4 program doesnt specify a specific profile we assume profile ID 0.
 
 Make sure that the p4node basic container has already been created at this point. To run the sample described setup here requires 3 terminals, two terminals inside the container and one on the VM side
 
-## Counter module
-
-For the counter to work, you'll need to copy its module from the directory net/sched/p4tc/externs/ to the flowtracker\_ipv6 directory.
-You'll find it under the following path: net/sched/p4tc/externs/ext\_Counter.ko
-In this specific example, the counter will count packets and bytes
-
 ### Terminal 1 (observation of tc commands on p4node).
 
 Enter the container p4node:
@@ -101,34 +95,9 @@ You should immediately see on on <u>terminal 1</u> an event advertising that a t
     dynamic true
     table aging 30000
     tmpl created false
-          Extern kind Counter
-          Extern instance global_counter
-          Extern key 2
-          Params:
-
-          pkts  id 2 type bit32 value: 0
-          bytes  id 3 type bit64 value: 0
 ```
 
 Type a few characters followed by CR key if you want to keep this flow alive..
-
-Right after you can retrive the counter values the counter using the extern get command:
-
-```
-$TC p4ctrl get flowtracker/extern/Counter/global_counter tc_key index 2
- total exts 0
- 
-         extern order 1:
-           Extern kind Counter
-           Extern instance global_counter
-           Extern key 6
-           Params:
- 
-           pkts  id 2 type bit32 value: 10
-           bytes  id 3 type bit64 value: 800
-```
-
-Note that we specified the key (6) according to the value showed in the entry create event.
 
 If you wait for 30 seconds without typing anything on the nc window (terminal 3) you will see the entry getting expired by the kernel idle timer, as such:
 

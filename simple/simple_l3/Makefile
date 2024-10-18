@@ -25,7 +25,7 @@ $(OBJS): %.o : %.c
 	$(CLANG) $(CFLAGS) $(INCLUDES) --target=bpf -mcpu=probe -c $< -o $@
 
 generate:
-	p4c-pna-p4tc $(PROG).p4 -o .
+	p4c-pna-p4tc $(PROG).p4 -o generated/
 
 clean:
 	rm -f $(OBJS)

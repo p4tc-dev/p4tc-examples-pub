@@ -45,8 +45,8 @@
  * Standard ethernet header
  */
 header ethernet_t {
-    @tc_type("macaddr") bit<48> dstAddr;
-    @tc_type("macaddr") bit<48> srcAddr;
+    bit<48> dstAddr;
+    bit<48> srcAddr;
     bit<16> etherType;
 }
 

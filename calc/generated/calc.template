@@ -2,7 +2,7 @@
 
 set -e
 
-TC="tc"
+: "${TC:="tc"}"
 $TC p4template create pipeline/calc numtables 1
 
 $TC p4template create action/calc/MainControlImpl/operation_add actid 1
@@ -26,7 +26,7 @@ $TC p4template update action/calc/MainControlImpl/operation_drop state active
 $TC p4template create table/calc/MainControlImpl/calculate \
 	tblid 1 \
 	type exact \
-	keysz 8 nummasks 8 tentries 2048 \
+	keysz 8 permissions 0x3da4 tentries 1024 nummasks 1 \
 	table_acts act name calc/MainControlImpl/operation_add \
 	act name calc/MainControlImpl/operation_sub \
 	act name calc/MainControlImpl/operation_and \

@@ -3,7 +3,7 @@
 : ${TC:="tc"}
 
 $TC filter del block 21 ingress protocol all prio 10 p4 pname ipip
-sleep 1
+sleep 2
 rmmod ext_csum
 $TC p4template del pipeline/ipip pipeid 1
 sudo rm -rf /sys/fs/bpf/tc/globals/
