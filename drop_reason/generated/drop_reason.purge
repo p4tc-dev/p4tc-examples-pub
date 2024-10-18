@@ -1,0 +1,10 @@
+#!/bin/bash
+
+: "${TC:="tc"}"
+
+$TC filter del block 21 ingress protocol all prio 10 p4 pname drop_reason
+sleep 2
+$TC p4template del pipeline/drop_reason
+$TC p4template del extern/root/Digest
+rmmod ext_Digest.ko
+sudo rm -rf /sys/fs/bpf/tc/globals/
