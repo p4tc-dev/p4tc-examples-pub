@@ -116,13 +116,6 @@ If you wait for 30 seconds without typing anything on the nc window (terminal 3)
     table aging 30000
     created 109 sec    used 79 sec
     tmpl created false
-          Extern kind Counter
-          Extern instance global_counter
-          Extern key 2
-          Params:
-
-          pkts  id 2 type bit32 value: 10
-          bytes  id 3 type bit64 value: 800
 ```
 
 Other commands
