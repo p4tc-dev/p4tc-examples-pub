@@ -137,7 +137,7 @@ On <u>terminal 3</u> watch *port1* traffic (recall that you are watching incomin
 
 Now you can see the rewritten mac address when you generate traffic on terminal 4 as follows:
 
-`sudo ../../sendpacket/sendpacket.py ./testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py ./testpkt.yml`
 
 ## General help on runtime CLI
 
