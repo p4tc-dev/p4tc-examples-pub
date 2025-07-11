@@ -4,6 +4,7 @@
 ## Argument for the CLANG compiler
 CLANG ?= clang
 PROG ?= arp_respond
+P4C ?= p4c-pna-p4tc
 #we need to have a headers package instead of this..
 INCLUDES= -I../include
 # Optimization flags to save space
@@ -25,7 +26,7 @@ $(OBJS): %.o : %.c
 	$(CLANG) $(CFLAGS) $(INCLUDES) --target=bpf -mcpu=probe -c $< -o $@
 
 generate:
-	p4c-pna-p4tc $(PROG).p4 -o ./generated
+	$(P4C) $(PROG).p4 -o ./generated
 
 clean:
 	rm -f $(OBJS)

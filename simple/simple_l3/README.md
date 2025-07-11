@@ -135,7 +135,7 @@ On terminal 3 watch egressing port1 traffic:
 
 Now you can see the rewritten mac address when you generate traffic on <u>terminal 4</u> as follows:
 
-`sudo ./simple/simple_l3/README.md ./testpkt.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/simple/simple_l3/testpkt.yml`
 
 ## other commands
 

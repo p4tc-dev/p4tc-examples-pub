@@ -5,7 +5,6 @@
 #define IP_PROTO_UDP 0x11
 
 typedef bit<48>  EthernetAddress;
-typedef bit<32>  IPv4Address;
 
 header ethernet_t {
     @tc_type("macaddr") EthernetAddress dstAddr;
