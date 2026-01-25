@@ -82,7 +82,7 @@ static __always_inline int process(struct __sk_buff *skb, struct headers_t *hdr,
         u32 nh_index_0 = 0;
         {
 if (/* hdr->ip.isValid() */
-            hdr->ip.ebpf_valid && hdr->ip.ttl>1) {
+            hdr->ip.ebpf_valid && (hdr->ip.ttl > 1)) {
 /* fib_table_0.apply() */
                 {
                     /* construct key */
@@ -157,7 +157,7 @@ if (/* hdr->ip.isValid() */
                                 break;
                             case MAIN_NH_TABLE_ACT_MAIN_SET_NH: 
                                 {
-storePrimitive64((u8 *)&hdr->ethernet.dstAddr[0], 48, getPrimitive64((u8 *)(value->u.Main_set_nh.dmac), 48));
+                                    storePrimitive64((u8 *)&hdr->ethernet.dstAddr, 48, (getPrimitive64((u8 *)value->u.Main_set_nh.dmac, 48)));
                                     /* send_to_port(value->u.Main_set_nh.port) */
                                     compiler_meta__->drop = false;
                                     send_to_port(value->u.Main_set_nh.port);

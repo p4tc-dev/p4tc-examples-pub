@@ -246,9 +246,9 @@ Delete the entry we created
 
 `$TC p4ctrl delete routing/table/Main/fib_table prefix 10.0.0.0/8`
 
-dump the table to check if any entry
+dump the table to check whether the entry was deleted
 
-`$TC p4ctrl get routing/table/Main/nh_table`
+`$TC p4ctrl get routing/table/Main/fib_table`
 
 ## General help on commands
 

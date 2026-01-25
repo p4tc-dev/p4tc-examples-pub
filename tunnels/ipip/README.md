@@ -182,7 +182,7 @@ action set_nh param dmac 66:33:34:35:46:01 param port port0
 
 Then repeat the traffic test:
 
-`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/tunnels/ipip/testpkt-ipip.yml`
+`sudo /home/vagrant/sendpacket/sendpacket.py /home/vagrant/p4tc-examples-pub/tunnels/ipip/testpkt-ipip.yml`
 
 if you run tcpdump on port1, you will see:
 

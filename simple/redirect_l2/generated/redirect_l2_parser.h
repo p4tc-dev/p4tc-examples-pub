@@ -108,6 +108,3 @@ static inline void storePrimitive64(u8 *a, int size, u64 value) {
    }
 }
 
-#define BITS(v) (v).bits
-#define SETGUARDS(x) do ; while (0)
-
