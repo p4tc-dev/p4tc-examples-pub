@@ -88,12 +88,15 @@ You should immediately see on on <u>terminal 1</u> an event advertising that a t
      input_port id:1 size:32b type:dev exact fieldval  port0
      srcAddr id:2 size:128b type:ipv6 exact fieldval  2001:db8::1/128
      dstAddr id:3 size:128b type:ipv6 exact fieldval  2001:db8::2/128
-     hdr.ipv6.nextHdr id:4 size:8b type:bit8 exact fieldval  6
-     srcPort id:5 size:16b type:be16 exact fieldval  53660
-     dstPort id:6 size:16b type:be16 exact fieldval  1234
-    created by: kernel (id 1)
+     hdr.ipv6.nextHdr id:4 size:8b type:bit8 exact fieldval  6/0xff
+     srcPort id:5 size:16b type:be16 exact fieldval  53660/0xffff
+     dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
+    created by entity: kernel (id 1)
+    create by pid: 0
+    created by process: filter:h:0:ch:0:clid:0:prio:10:prot:768
     dynamic true
     table aging 30000
+
     tmpl created false
 ```
 
@@ -108,10 +111,15 @@ If you wait for 30 seconds without typing anything on the nc window (terminal 3)
      input_port id:1 size:32b type:dev exact fieldval  port0
      srcAddr id:2 size:128b type:ipv6 exact fieldval  2001:db8::1/128
      dstAddr id:3 size:128b type:ipv6 exact fieldval  2001:db8::2/128
-     hdr.ipv6.nextHdr id:4 size:8b type:bit8 exact fieldval  6
-     srcPort id:5 size:16b type:be16 exact fieldval  53660
-     dstPort id:6 size:16b type:be16 exact fieldval  1234
-    created by: kernel (id 1)
+     hdr.ipv6.nextHdr id:4 size:8b type:bit8 exact fieldval  6/0xff
+     srcPort id:5 size:16b type:be16 exact fieldval  53660/0xffff
+     dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
+    created by entity: kernel (id 1)
+    create by pid: 0
+    created by process: filter:h:0:ch:0:clid:0:prio:10:prot:768
+    deleted by: timer (id 3)
+    delete by pid: 0
+    deleted by process: timer
     dynamic true
     table aging 30000
     created 109 sec    used 79 sec

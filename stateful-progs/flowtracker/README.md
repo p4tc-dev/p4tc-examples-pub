@@ -94,9 +94,13 @@ You should immediately see on on <u>terminal 1</u> an event advertising that a t
      hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6/0xff
      srcPort id:5 size:16b type:be16 exact fieldval  36876/0xffff
      dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
-    created by: kernel (id 1)
+    created by entity: kernel (id 1)
+    create by pid: 0
+    created by process: filter:h:0:ch:0:clid:0:prio:10:prot:768
     dynamic true
     table aging 30000
+
+    tmpl created false
 ```
 
 Type a few characters followed by CR key if you want to keep this flow alive..
@@ -113,8 +117,12 @@ If you wait for 30 seconds without typing anything on the nc window (terminal 3)
       hdr.ipv4.protocol id:4 size:8b type:bit8 exact fieldval  6/0xff
       srcPort id:5 size:16b type:be16 exact fieldval  36876/0xffff
       dstPort id:6 size:16b type:be16 exact fieldval  1234/0xffff
-     created by: kernel (id 1)
+     created by entity: kernel (id 1)
+     create by pid: 0
+     created by process: filter:h:0:ch:0:clid:0:prio:10:prot:768
      deleted by: timer (id 3)
+     delete by pid: 0
+     deleted by process: timer
      dynamic true
      table aging 30000
      created 30 sec    used 30 sec

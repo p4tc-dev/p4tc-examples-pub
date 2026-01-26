@@ -118,18 +118,3 @@ static inline void storePrimitive64(u8 *a, int size, u64 value) {
    }
 }
 
-#define BITS(v) (v).bits
-#define SETGUARDS(x) do ; while (0)
-
-struct internal_bit_128 {
-  u8 bits[16];
-};
-
-static __always_inline struct internal_bit_128 loadfrom_128(u8 *in)
-{
- struct internal_bit_128 rv;
-
- __builtin_memcpy(&rv.bits[0],in,16);
- return(rv);
-}
-
