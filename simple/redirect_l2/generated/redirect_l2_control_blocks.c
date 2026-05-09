@@ -16,7 +16,8 @@ struct __attribute__((__packed__)) ingress_nh_table_key {
     u32 field0; /* hdr.ipv4.srcAddr */
 } __attribute__((aligned(8)));
 #define INGRESS_NH_TABLE_ACT_INGRESS_SEND_NH 1
-#define INGRESS_NH_TABLE_ACT__NOACTION 0
+#define INGRESS_NH_TABLE_ACT_INGRESS_DROP 2
+#define INGRESS_NH_TABLE_ACT_NOACTION 0
 struct __attribute__((__packed__)) ingress_nh_table_value {
     unsigned int action;
     u32 hit:1,
@@ -30,6 +31,8 @@ struct __attribute__((__packed__)) ingress_nh_table_value {
             u8 dmac[6];
             u8 smac[6];
         } ingress_send_nh;
+        struct {
+        } ingress_drop;
     } u;
 };
 
@@ -93,7 +96,13 @@ static __always_inline int process(struct __sk_buff *skb, struct my_ingress_head
                                 send_to_port(value->u.ingress_send_nh.port_id);
                             }
                             break;
-                        case INGRESS_NH_TABLE_ACT__NOACTION: 
+                        case INGRESS_NH_TABLE_ACT_INGRESS_DROP: 
+                            {
+/* drop_packet() */
+                                drop_packet();
+                            }
+                            break;
+                        case INGRESS_NH_TABLE_ACT_NOACTION: 
                             {
                             }
                             break;
